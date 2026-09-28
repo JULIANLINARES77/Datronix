@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import uniminuto.datronix.dto.LoginRequest;
-import uniminuto.datronix.dto.UsuarioDTO;
-import uniminuto.datronix.entity.Usuario;
+import uniminuto.datronix.dto.UsuarioCreateDTO;
+import uniminuto.datronix.dto.UsuarioResponseDTO;
 import uniminuto.datronix.service.UsuarioService;
 
 @RestController
@@ -33,51 +34,43 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
-        // Devuelve los usuarios que el servicio encuentra en la base de datos.
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
+
         return ResponseEntity.ok(usuarioService.listarUsuarios());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable String id) {
+    public ResponseEntity<UsuarioResponseDTO> buscarUsuarioPorId(@PathVariable String id) {
         // Usa el documento o identificador recibido en la URL para buscar un usuario.
-        UsuarioDTO usuario = usuarioService.buscarUsuarioPorId(id);
-        return ResponseEntity.ok(usuario);
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
 
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> guardarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioResponseDTO> guardarUsuario(@Valid @RequestBody UsuarioCreateDTO dto) {
         // Guarda directamente los datos del usuario enviados por el formulario.
-        UsuarioDTO usuarioCreado = usuarioService.guardarUsuario(usuarioDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
+
+        UsuarioResponseDTO creado = usuarioService.guardarUsuario(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
 
     }
 
     @DeleteMapping("/{id}")
-    public void eliminarUsuario(@PathVariable String id) {
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable String id) {
         // Solicita al servicio que elimine el usuario indicado.
         usuarioService.eliminarUsuario(id);
 
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginRequest request) {
         // Comprueba las credenciales y devuelve al usuario o un aviso de acceso
         // rechazado.
-        Usuario usuario = usuarioService.autenticar(loginRequest.getCorreoUsuario(),
-                loginRequest.getContrasenaUsuario());
 
-        if (usuario != null) {
-
-            return ResponseEntity.ok(usuario);
-
-        } else {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Correo o contraseña incorrecta");
-
-        }
-
+        UsuarioResponseDTO usuario = usuarioService.autenticar(request.getCorreoUsuario(),
+                request.getContrasenaUsuario());
+        return ResponseEntity.ok(usuario);
     }
 
 }

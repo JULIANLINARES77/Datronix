@@ -10,4 +10,7 @@ import uniminuto.datronix.entity.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     Optional<Usuario> findByCorreoUsuario(String correoUsuario);
 
+    boolean existsByCorreoUsuario(String correoUsuario);
+
+    boolean existsByIdUsuario(String idUsuario);
 }

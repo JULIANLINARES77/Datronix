@@ -4,7 +4,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Manejador global de errores.
@@ -14,18 +18,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    //Usuario no encontrado 
+    // Usuario no encontrado
     @ExceptionHandler(UsuarioNotFoundException.class)
-    public  ResponseEntity<ErrorResponseDTO> handleUsuarioNotFound(UsuarioNotFoundException ex){
-        ErrorResponseDTO error=ErrorResponseDTO.builder()
-        .codigo("USU-001")
-        .mensaje(ex.getMessage())
-        .build();
-        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-
+    public ResponseEntity<ErrorResponseDTO> handleUsuarioNotFound(UsuarioNotFoundException ex) {
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .codigo("USU-001")
+                .mensaje(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
 
     }
-    
 
     // 1. Cliente no encontrado → 404
     @ExceptionHandler(ClienteNotFoundException.class)
@@ -116,14 +118,15 @@ public class GlobalExceptionHandler {
 
     // 4. No se puede eliminar porque tiene dependencias (ej. proveedor con compras)
     // → 409
-   @ExceptionHandler(DataIntegrityViolationException.class)
-public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-    ErrorResponseDTO error = ErrorResponseDTO.builder()
-            .codigo("INTEG-001")
-            .mensaje("Operación bloqueada por una restricción de la base de datos. Verifica que los IDs relacionados existan y que no haya duplicados.")
-            .build();
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-}
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .codigo("INTEG-001")
+                .mensaje(
+                        "Operación bloqueada por una restricción de la base de datos. Verifica que los IDs relacionados existan y que no haya duplicados.")
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 
     // 5. Cualquier otro error no controlado → 500
     @ExceptionHandler(Exception.class)
@@ -134,4 +137,61 @@ public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolation(DataIntegri
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
+    @ExceptionHandler(UsuarioIdDuplicadoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUsuarioIdDuplicado(UsuarioIdDuplicadoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                        .codigo("USU-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+
+    }
+
+    @ExceptionHandler(UsuarioCorreoDuplicadoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUsuarioCorreoDuplicado(UsuarioCorreoDuplicadoException ex) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+
+                ErrorResponseDTO.builder()
+                        .codigo("USU-003")
+                        .mensaje(ex.getMessage())
+                        .build()
+
+        );
+
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCredencialesInvalidas(CredencialesInvalidasException ex) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ErrorResponseDTO.builder()
+                        .codigo("USU-004")
+                        .mensaje(ex.getMessage())
+                        .build()
+
+        );
+
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDTO> handleValidationErrors(MethodArgumentNotValidException ex) {
+
+        String mensaje = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ErrorResponseDTO.builder()
+                        .codigo("VAL-001")
+                        .mensaje(mensaje)
+                        .build()
+
+        );
+
+    }
+
 }

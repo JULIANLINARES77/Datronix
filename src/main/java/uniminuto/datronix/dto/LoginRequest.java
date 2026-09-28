@@ -13,7 +13,7 @@ public class LoginRequest {
     @Email(message = "El correo debe tener un formato válido")
     private String correoUsuario;
 
-    @NotBlank(message = "La comtraseña es obligatoriaG")
+    @NotBlank(message = "La contraseña es obligatoriaG")
     private String contrasenaUsuario;
 
 }

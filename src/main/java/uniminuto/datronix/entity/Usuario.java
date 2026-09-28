@@ -1,6 +1,10 @@
 package uniminuto.datronix.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,21 +15,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder 
-// Representa la cuenta que puede identificarse y entrar al sistema.
+@Builder
 public class Usuario {
 
     @Id
-    @Column(name = "idusuario", nullable = false)
-    private String idUsuario; // Cédula / documento
+    @Column(name = "idusuario", nullable = false, length = 20, updatable = false)
+    private String idUsuario; // Cédula / documento — lo envía el cliente, no se genera
 
-    @Column(name = "nombreusuario", length = 255)
+    @Column(name = "nombreusuario", nullable = false, length = 100)
     private String nombreUsuario;
 
-    @Column(name = "correousuario", length = 255)
+    @Column(name = "correousuario", nullable = false, length = 255, unique = true)
     private String correoUsuario;
 
-    @Column(name = "contrasenausuario", length = 255)
+    @Column(name = "contrasenausuario", nullable = false, length = 255)
     private String contrasenaUsuario;
-
 }
