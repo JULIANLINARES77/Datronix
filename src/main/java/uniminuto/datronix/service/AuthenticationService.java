@@ -6,10 +6,6 @@ import java.time.Instant;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,20 +43,17 @@ public class AuthenticationService {
     private final UsuarioRepository usuarioRepository;
     private final EmailVerificationCodeRepository codeRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
-    private final String mailFrom;
+    private final EmailService emailService;
 
     public AuthenticationService(
             UsuarioRepository usuarioRepository,
             EmailVerificationCodeRepository codeRepository,
             PasswordEncoder passwordEncoder,
-            JavaMailSender mailSender,
-            @Value("${spring.mail.username}") String mailFrom) {
+            EmailService emailService) {
         this.usuarioRepository = usuarioRepository;
         this.codeRepository = codeRepository;
         this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
-        this.mailFrom = mailFrom;
+        this.emailService = emailService;
     }
 
     @Transactional(noRollbackFor = {CredencialesInvalidasException.class, CuentaBloqueadaException.class})
@@ -146,17 +139,11 @@ public class AuthenticationService {
         verification.setAttempts(0);
         codeRepository.save(verification);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mailFrom);
-        message.setTo(usuario.getCorreoUsuario());
-        message.setSubject("Código de seguridad de Datronix");
-        message.setText("Tu código para " + operation + " es: " + code
-                + "\n\nVence en 2 minutos. Si no solicitaste este código, ignora este mensaje.");
-        try {
-            mailSender.send(message);
-        } catch (MailException ex) {
-            throw new CorreoNoDisponibleException(ex);
-        }
+        String html = "<p>Tu código para " + operation + " es:</p>"
+                + "<p><strong>" + code + "</strong></p>"
+                + "<p>Vence en 2 minutos. Si no solicitaste este código, ignora este mensaje.</p>";
+        emailService.enviarCorreo(
+                usuario.getCorreoUsuario(), "Código de seguridad de Datronix", html);
     }
 
     private void consumirCodigo(Usuario usuario, String purpose, String candidate) {

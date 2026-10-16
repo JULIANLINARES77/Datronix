@@ -11,9 +11,9 @@ services:
         sync: false
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
-      - key: SPRING_MAIL_USERNAME
+      - key: RESEND_API_KEY
         sync: false
-      - key: SPRING_MAIL_PASSWORD
-        sync: false
+      - key: RESEND_FROM_ADDRESS
+        value: onboarding@resend.dev
       - key: DATRONIX_CORS_ALLOWED_ORIGINS
         sync: false

@@ -18,6 +18,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     @Query("select u from Usuario u where lower(u.correoUsuario) = lower(:correo)")
     Optional<Usuario> findByCorreoUsuarioForUpdate(@Param("correo") String correoUsuario);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Usuario> findFirstByRolUsuarioIgnoreCaseOrderByIdUsuarioAsc(String rolUsuario);
+
     boolean existsByCorreoUsuario(String correoUsuario);
 
     boolean existsByIdUsuario(String idUsuario);

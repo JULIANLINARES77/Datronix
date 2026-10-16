@@ -17,8 +17,11 @@ Al crear el Blueprint desde `render.yaml`, completa las variables marcadas como
 
 - `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`: usuario y contraseña
   de base de datos.
-- `SPRING_MAIL_USERNAME` y `SPRING_MAIL_PASSWORD`: cuenta SMTP y contraseña de
-  aplicación del proveedor de correo.
+- `RESEND_API_KEY`: API key de Resend; configúrala como variable secreta en Render.
+- `RESEND_FROM_ADDRESS`: dirección remitente autorizada en Resend. El valor
+  predeterminado del Blueprint, `onboarding@resend.dev`, solo sirve para pruebas
+  limitadas; para enviar a usuarios reales verifica un dominio en Resend y usa
+  una dirección de ese dominio.
 - `DATRONIX_CORS_ALLOWED_ORIGINS`: origen o lista de orígenes del frontend,
   separados por comas.
 
@@ -26,11 +29,11 @@ El certificado se obtiene por HTTPS desde el endpoint público de CockroachDB y
 queda incluido en la imagen; no es una credencial. Las contraseñas de base de datos
 y correo permanecen como variables de entorno y no se copian a la imagen.
 
-La configuración prueba STARTTLS en el puerto 587 y establece tiempos máximos de
-conexión, lectura y escritura. La compilación no prueba la entrega SMTP: después
-del despliegue, confirma que el plan y el proveedor permitan salida al puerto 587.
-Si la conexión está bloqueada, se necesitará un proveedor de correo accesible por
-HTTPS/API.
+La aplicación envía correo mediante la API HTTPS de Resend por el puerto 443, no
+por SMTP. La API key no debe guardarse en el repositorio ni en la imagen; debe
+configurarse en Render como `RESEND_API_KEY`. La compilación y las pruebas
+automatizadas no confirman la entrega real: tras el despliegue, solicita una
+recuperación y revisa el estado del mensaje en Resend.
 
 La descarga del certificado ocurre al construir la imagen, así que la construcción
 requiere acceso HTTPS al endpoint de CockroachDB. La aplicación conserva

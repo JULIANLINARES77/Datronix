@@ -5,7 +5,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,23 +25,19 @@ import uniminuto.datronix.repository.EmailVerificationCodeRepository;
 // Contiene las consultas de usuarios y la comprobación usada por el inicio de
 // sesión.
 public class UsuarioService {
-    private static final Set<String> ROLES_PERMITIDOS = Set.of("ADMINISTRADOR", "OPERADOR", "BODEGA");
-    private static final long BLOQUEO_ADMINISTRADORES_ID = 78246109L;
+private static final Set<String> ROLES_PERMITIDOS = Set.of("ADMINISTRADOR", "OPERADOR", "BODEGA");
 
-    private final UsuarioRepository usuarioRepository;
-    private final EmailVerificationCodeRepository codeRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JdbcTemplate jdbcTemplate;
+private final UsuarioRepository usuarioRepository;
+private final EmailVerificationCodeRepository codeRepository;
+private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(
-            UsuarioRepository usuarioRepository,
-            EmailVerificationCodeRepository codeRepository,
-            PasswordEncoder passwordEncoder,
-            JdbcTemplate jdbcTemplate) {
-        this.usuarioRepository = usuarioRepository;
-        this.codeRepository = codeRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jdbcTemplate = jdbcTemplate;
+public UsuarioService(
+        UsuarioRepository usuarioRepository,
+        EmailVerificationCodeRepository codeRepository,
+        PasswordEncoder passwordEncoder) {
+    this.usuarioRepository = usuarioRepository;
+    this.codeRepository = codeRepository;
+    this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioResponseDTO> listarUsuarios() {
@@ -64,8 +59,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO guardarUsuario(UsuarioCreateDTO dto) {
-        // Serializa los registros para garantizar un solo administrador inicial.
-        jdbcTemplate.execute("SELECT pg_advisory_xact_lock(" + BLOQUEO_ADMINISTRADORES_ID + ")");
+        bloquearAdministradorPrincipal();
         boolean primerUsuario = usuarioRepository.count() == 0;
 
         if (usuarioRepository.existsByIdUsuario(dto.getIdUsuario())) {
@@ -88,7 +82,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO actualizarRol(String id, String rolSolicitado) {
-        jdbcTemplate.execute("SELECT pg_advisory_xact_lock(" + BLOQUEO_ADMINISTRADORES_ID + ")");
+        bloquearAdministradorPrincipal();
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
         String nuevoRol = normalizarRol(rolSolicitado, null);
@@ -103,7 +97,7 @@ public class UsuarioService {
 
     @Transactional
     public void eliminarUsuario(String id) {
-        jdbcTemplate.execute("SELECT pg_advisory_xact_lock(" + BLOQUEO_ADMINISTRADORES_ID + ")");
+        bloquearAdministradorPrincipal();
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
         if ("ADMINISTRADOR".equalsIgnoreCase(usuario.getRolUsuario())
@@ -116,6 +110,10 @@ public class UsuarioService {
 
     public UsuarioResponseDTO toResponseDTO(Usuario usuario) {
         return UsuarioMapper.toResponseDTO(usuario);
+    }
+
+    private void bloquearAdministradorPrincipal() {
+        usuarioRepository.findFirstByRolUsuarioIgnoreCaseOrderByIdUsuarioAsc("ADMINISTRADOR");
     }
 
     private String normalizarRol(String rol, String rolPredeterminado) {

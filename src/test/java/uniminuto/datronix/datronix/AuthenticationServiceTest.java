@@ -16,8 +16,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import uniminuto.datronix.dto.EmailAddressRequestDTO;
@@ -31,15 +29,16 @@ import uniminuto.datronix.exception.CuentaBloqueadaException;
 import uniminuto.datronix.repository.EmailVerificationCodeRepository;
 import uniminuto.datronix.repository.UsuarioRepository;
 import uniminuto.datronix.service.AuthenticationService;
+import uniminuto.datronix.service.EmailService;
 
 class AuthenticationServiceTest {
     private final UsuarioRepository usuarioRepository = Mockito.mock(UsuarioRepository.class);
     private final EmailVerificationCodeRepository codeRepository =
             Mockito.mock(EmailVerificationCodeRepository.class);
     private final PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-    private final JavaMailSender mailSender = Mockito.mock(JavaMailSender.class);
+    private final EmailService emailService = Mockito.mock(EmailService.class);
     private final AuthenticationService service = new AuthenticationService(
-            usuarioRepository, codeRepository, passwordEncoder, mailSender, "no-reply@datronix.test");
+            usuarioRepository, codeRepository, passwordEncoder, emailService);
 
     @Test
     void locksAfterThreeIncorrectPasswordsAndRejectsLoginDuringLock() {
@@ -132,9 +131,12 @@ class AuthenticationServiceTest {
         request.setCorreoUsuario("user@example.test");
         service.solicitarDesbloqueo(request);
 
-        ArgumentCaptor<SimpleMailMessage> mail = ArgumentCaptor.forClass(SimpleMailMessage.class);
-        verify(mailSender).send(mail.capture());
-        assertTrue(mail.getValue().getText().matches("(?s).*\\b\\d{6}\\b.*"));
+        ArgumentCaptor<String> html = ArgumentCaptor.forClass(String.class);
+        verify(emailService).enviarCorreo(
+                Mockito.eq("user@example.test"),
+                Mockito.eq("Código de seguridad de Datronix"),
+                html.capture());
+        assertTrue(html.getValue().matches("(?s).*\\b\\d{6}\\b.*"));
 
         EmailCodeVerificationDTO verification = new EmailCodeVerificationDTO();
         verification.setCorreoUsuario("user@example.test");

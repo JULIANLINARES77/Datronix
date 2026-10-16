@@ -11,7 +11,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import uniminuto.datronix.dto.UsuarioCreateDTO;
@@ -27,9 +26,8 @@ class UsuarioServiceTest {
     private final EmailVerificationCodeRepository codeRepository =
             Mockito.mock(EmailVerificationCodeRepository.class);
     private final PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-    private final JdbcTemplate jdbcTemplate = Mockito.mock(JdbcTemplate.class);
     private final UsuarioService service = new UsuarioService(
-            usuarioRepository, codeRepository, passwordEncoder, jdbcTemplate);
+            usuarioRepository, codeRepository, passwordEncoder);
 
     @Test
     void eliminarUsuarioRejectsRemovingLastAdministrator() {
@@ -59,6 +57,24 @@ class UsuarioServiceTest {
         var response = service.guardarUsuario(request);
 
         assertEquals("BODEGA", response.getRolUsuario());
+        verify(usuarioRepository).save(any(Usuario.class));
+    }
+
+    @Test
+    void guardarUsuarioCreatesOperatorRoleWhenRequested() {
+        UsuarioCreateDTO request = new UsuarioCreateDTO();
+        request.setIdUsuario("12345678");
+        request.setNombreUsuario("Usuario Operador");
+        request.setCorreoUsuario("operador@empresa.test");
+        request.setContrasenaUsuario("Contraseña123");
+        request.setRolUsuario("operador");
+        when(usuarioRepository.count()).thenReturn(1L);
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode("Contraseña123")).thenReturn("hash");
+
+        var response = service.guardarUsuario(request);
+
+        assertEquals("OPERADOR", response.getRolUsuario());
         verify(usuarioRepository).save(any(Usuario.class));
     }
 
