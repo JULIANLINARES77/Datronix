@@ -120,9 +120,143 @@ function renderizarDashboardReporte(reporte) {
         `${reporte.creditosPendientes.length} ventas marcadas a crédito`;
 }
 
+function textoPdf(valor) {
+    return String(valor ?? '—')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[–—]/g, '-')
+        .replace(/[^\x20-\x7E]/g, '?');
+}
+
+function escaparTextoPdf(valor) {
+    return textoPdf(valor).replace(/([\\()])/g, '\\$1');
+}
+
+function envolverTextoPdf(texto, maxCaracteres) {
+    const palabras = textoPdf(texto).split(/\s+/);
+    const lineas = [];
+    let linea = '';
+    palabras.forEach(palabra => {
+        while (palabra.length > maxCaracteres) {
+            if (linea) {
+                lineas.push(linea);
+                linea = '';
+            }
+            lineas.push(palabra.slice(0, maxCaracteres));
+            palabra = palabra.slice(maxCaracteres);
+        }
+        const candidata = linea ? `${linea} ${palabra}` : palabra;
+        if (candidata.length > maxCaracteres) {
+            lineas.push(linea);
+            linea = palabra;
+        } else {
+            linea = candidata;
+        }
+    });
+    if (linea || lineas.length === 0) lineas.push(linea);
+    return lineas;
+}
+
+function construirPdfReporte(panel, boton) {
+    const tituloReporte = panel.querySelector('.dashboard-panel-title')?.textContent.trim() || 'Reporte';
+    const encabezados = [...panel.querySelectorAll('thead th')].map(celda => celda.textContent.trim());
+    const filas = [...panel.querySelectorAll('tbody tr')]
+        .map(fila => [...fila.cells].map(celda => celda.textContent.trim()))
+        .filter(celdas => celdas.length === encabezados.length);
+    const indicadores = [
+        `Ingresos del mes: ${document.getElementById('reporteIngresosMes').textContent}`,
+        `Ventas realizadas: ${document.getElementById('reporteVentasMes').textContent}`,
+        `Cartera en credito: ${document.getElementById('reporteCarteraCredito').textContent}`,
+        `Stock critico: ${document.getElementById('reporteStockCritico').textContent}`
+    ];
+    const fechaExportacion = new Date().toLocaleString('es-CO');
+    const paginas = [];
+    let comandos = [];
+    let y = 790;
+
+    const escribirLinea = (texto, opciones = {}) => {
+        const { size = 10, bold = false, indent = 0 } = opciones;
+        if (y < 52) {
+            paginas.push(comandos.join('\n'));
+            comandos = [];
+            y = 790;
+            comandos.push(`BT /F2 11 Tf 48 ${y} Td (Datronix - ${escaparTextoPdf(tituloReporte)} - continuacion) Tj ET`);
+            y -= 24;
+        }
+        comandos.push(
+            `BT /${bold ? 'F2' : 'F1'} ${size} Tf ${48 + indent} ${y} Td ` +
+            `(${escaparTextoPdf(texto)}) Tj ET`
+        );
+        y -= size + 5;
+    };
+
+    escribirLinea('DATRONIX - REPORTE', { size: 16, bold: true });
+    escribirLinea(tituloReporte, { size: 12, bold: true });
+    escribirLinea(`Generado: ${fechaExportacion}`, { size: 9 });
+    y -= 5;
+    indicadores.forEach(indicador => escribirLinea(indicador, { size: 9 }));
+    y -= 5;
+    escribirLinea(encabezados.join(' | '), { bold: true });
+    escribirLinea('-'.repeat(Math.min(90, Math.max(24, encabezados.join(' | ').length))));
+
+    if (filas.length === 0) {
+        const mensaje = panel.querySelector('tbody td')?.textContent.trim() || 'No hay datos para mostrar.';
+        escribirLinea(mensaje);
+    } else {
+        filas.forEach((fila, indice) => {
+            const datos = fila.map((valor, columna) => `${encabezados[columna]}: ${valor}`).join(' | ');
+            envolverTextoPdf(`${indice + 1}. ${datos}`, 92).forEach(linea => escribirLinea(linea));
+            y -= 3;
+        });
+    }
+
+    if (comandos.length > 0) paginas.push(comandos.join('\n'));
+    const objetos = [
+        '<< /Type /Catalog /Pages 2 0 R >>',
+        '',
+        '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+        '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>'
+    ];
+    const paginaRefs = [];
+    paginas.forEach(contenido => {
+        const idPagina = objetos.length + 1;
+        const idContenido = idPagina + 1;
+        paginaRefs.push(`${idPagina} 0 R`);
+        objetos.push(
+            `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] ` +
+            `/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${idContenido} 0 R >>`
+        );
+        objetos.push(`<< /Length ${contenido.length} >>\nstream\n${contenido}\nendstream`);
+    });
+    objetos[1] = `<< /Type /Pages /Kids [${paginaRefs.join(' ')}] /Count ${paginaRefs.length} >>`;
+
+    let pdf = '%PDF-1.4\n';
+    const offsets = [0];
+    objetos.forEach((objeto, indice) => {
+        offsets.push(pdf.length);
+        pdf += `${indice + 1} 0 obj\n${objeto}\nendobj\n`;
+    });
+    const xrefOffset = pdf.length;
+    pdf += `xref\n0 ${objetos.length + 1}\n0000000000 65535 f \n`;
+    offsets.slice(1).forEach(offset => {
+        pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+    });
+    pdf += `trailer\n<< /Size ${objetos.length + 1} /Root 1 0 R >>\n` +
+        `startxref\n${xrefOffset}\n%%EOF`;
+
+    const blobUrl = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
+    const enlace = document.createElement('a');
+    enlace.href = blobUrl;
+    enlace.download = `datronix-reporte-${panel.dataset.reportPanel}-${new Date().toISOString().slice(0, 10)}.pdf`;
+    enlace.click();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    boton.focus();
+}
+
 function inicializarReportes() {
     const tabs = [...document.querySelectorAll('[data-report-tab]')];
     const panels = [...document.querySelectorAll('[data-report-panel]')];
+    const botonPdf = document.getElementById('descargarReportePdf');
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
@@ -131,10 +265,18 @@ function inicializarReportes() {
             });
         });
     });
+    botonPdf.addEventListener('click', () => {
+        const panel = panels.find(item => !item.hidden);
+        if (panel) construirPdfReporte(panel, botonPdf);
+    });
     getData('/reportes/dashboard')
-        .then(renderizarDashboardReporte)
+        .then(reporte => {
+            renderizarDashboardReporte(reporte);
+            botonPdf.disabled = false;
+        })
         .catch(error => {
             const message = `No se pudieron cargar los reportes: ${errorReporte(error)}`;
+            botonPdf.disabled = true;
             document.querySelectorAll('[id$="Estado"]').forEach(status => {
                 status.textContent = message;
             });
