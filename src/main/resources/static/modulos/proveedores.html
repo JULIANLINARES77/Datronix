@@ -1,24 +1,25 @@
 <!-- Este fragmento se inserta en el panel y proveedores.js conecta sus controles. -->
-<div class="modulo-clientes">
-    <div class="top-bar-modulo">
-        <span class="titulo-modulo">🏢 Proveedores</span>
-        <div class="user-info-modulo">
-            <span>Usuario: <strong id="nombreUsuarioModulo">Cargando...</strong></span>
+<div class="modulo-clientes crud-module">
+    <span class="module-username-hidden" id="nombreUsuarioModulo"></span>
+    <!-- Barra de herramientas -->
+    <div class="toolbar-clientes">
+        <h1 class="crud-heading">Proveedores</h1>
+        <div class="busqueda">
+            <input type="text" id="txtBuscarProveedor" placeholder="Buscar por ID, empresa o contacto...">
+            <button class="btn icon-only" id="btnBuscarProveedor" aria-label="Buscar" title="Buscar"><i class="fas fa-search"></i></button>
+            <button class="btn icon-only" id="btnActualizarProveedor" aria-label="Actualizar" title="Actualizar"><i class="fas fa-rotate"></i></button>
+        </div>
+        <div class="acciones">
+            <button class="btn icon-only" id="btnModificarProveedor" aria-label="Editar proveedor seleccionado" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+            <button class="btn btn-danger icon-only" id="btnEliminarProveedor" aria-label="Eliminar proveedor seleccionado" title="Eliminar"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-primary" id="btnAgregarProveedor"><i class="fas fa-plus"></i> Agregar proveedor</button>
         </div>
     </div>
 
-    <!-- Barra de herramientas -->
-    <div class="toolbar-clientes">
-        <div class="busqueda">
-            <input type="text" id="txtBuscarProveedor" placeholder="Buscar por ID, empresa o contacto...">
-            <button class="btn btn-primary" id="btnBuscarProveedor">Buscar</button>
-            <button class="btn btn-outline" id="btnActualizarProveedor">↻ Actualizar</button>
-        </div>
-        <div class="acciones">
-            <button class="btn btn-primary" id="btnAgregarProveedor">+ Agregar</button>
-            <button class="btn btn-primary" id="btnModificarProveedor">✎ Modificar</button>
-            <button class="btn btn-danger" id="btnEliminarProveedor">🗑 Eliminar</button>
-        </div>
+    <div class="crud-kpis">
+        <article class="crud-kpi"><p class="crud-kpi-label">Proveedores registrados</p><p class="crud-kpi-value">24</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Productos abastecidos</p><p class="crud-kpi-value">562</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Ciudades</p><p class="crud-kpi-value">7</p></article>
     </div>
 
     <!-- Tabla de proveedores -->
@@ -32,10 +33,11 @@
                     <th>Teléfono</th>
                     <th>Email</th>
                     <th>Dirección</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbodyProveedores">
-                <tr><td colspan="6" class="text-center">Cargando proveedores...</td></tr>
+                <tr><td colspan="7" class="text-center">Cargando proveedores...</td></tr>
             </tbody>
         </table>
     </div>

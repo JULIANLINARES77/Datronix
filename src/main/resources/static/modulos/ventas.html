@@ -1,0 +1,72 @@
+<section class="demo-module">
+    <h1 class="module-heading">Registrar venta</h1>
+    <div class="workflow-layout">
+        <div class="workflow-main">
+            <section class="workflow-panel">
+                <header class="workflow-panel-heading"><span class="step-number">1</span><h2>Datos del cliente</h2></header>
+                <div class="workflow-panel-body">
+                    <div class="workflow-search-row">
+                        <div class="workflow-search-box"><i class="fas fa-search"></i><input id="clienteVentaBusqueda" placeholder="Buscar cliente por cédula o RUC..."></div>
+                        <button class="workflow-action" id="buscarClienteVenta" type="button">Buscar</button>
+                    </div>
+                    <div class="purchase-suggestions" id="clienteVentaSugerencias" role="listbox" hidden></div>
+                    <div class="workflow-result" id="clienteVentaSeleccionado" hidden>
+                        <div><p class="workflow-result-label">Nombre</p><strong id="nombreClienteVenta"></strong></div>
+                        <div><p class="workflow-result-label">Teléfono</p><strong id="telefonoClienteVenta"></strong></div>
+                        <div><p class="workflow-result-label">Dirección</p><strong id="direccionClienteVenta"></strong></div>
+                    </div>
+                    <p class="workflow-helper" id="clienteVentaEstado" role="status">Busca y selecciona un cliente registrado.</p>
+                    <p class="workflow-helper">¿El cliente no existe? <button class="text-primary" type="button" data-vista="clientes">Agregar cliente</button></p>
+                </div>
+            </section>
+
+            <section class="workflow-panel">
+                <header class="workflow-panel-heading"><span class="step-number">2</span><h2>Agregar productos al carrito</h2></header>
+                <div class="workflow-panel-body">
+                    <div class="workflow-search-row has-fields">
+                        <div class="purchase-autocomplete">
+                            <div class="workflow-search-box"><i class="fas fa-search"></i><input id="productoVentaBusqueda" placeholder="Buscar producto por ID o nombre..."></div>
+                            <div class="purchase-suggestions" id="productoVentaSugerencias" role="listbox" hidden></div>
+                        </div>
+                        <input class="workflow-input" id="cantidadVentaProducto" type="number" min="1" value="1" aria-label="Cantidad">
+                        <button class="workflow-action" id="agregarProductoVenta" type="button"><i class="fas fa-plus"></i> Añadir</button>
+                    </div>
+                    <div class="workflow-table-wrap" style="margin-top:16px">
+                        <table class="workflow-table">
+                            <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th><th></th></tr></thead>
+                            <tbody id="carritoVenta"><tr><td colspan="5" class="empty-cart">Agrega productos al carrito.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="workflow-panel">
+                <header class="workflow-panel-heading"><span class="step-number">3</span><h2>Finalizar venta</h2></header>
+                <div class="workflow-panel-body">
+                    <div class="workflow-fields">
+                        <label class="workflow-field span-all">Dirección de entrega<input id="direccionVenta" maxlength="255"></label>
+                        <label class="workflow-field">Estado de pago<select id="estadoPagoVenta"><option value="CONTADO">CONTADO</option><option value="CREDITO">CRÉDITO</option></select></label>
+                        <label class="workflow-field">Fecha de venta<input id="fechaVenta" type="date" required></label>
+                        <label class="workflow-field span-all">Observaciones de la remisión (opcional)<textarea id="observacionesRemisionVenta" maxlength="500" rows="3"></textarea></label>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <aside class="workflow-summary">
+            <section class="workflow-panel">
+                <h2 class="dashboard-panel-title">Resumen de la venta</h2>
+                <div class="workflow-panel-body">
+                    <dl class="workflow-summary-list">
+                        <div class="workflow-summary-row"><dt>Ítems</dt><dd id="resumenItemsVenta">0</dd></div>
+                        <div class="workflow-summary-row"><dt>Unidades</dt><dd id="resumenUnidadesVenta">0</dd></div>
+                        <div class="workflow-summary-row"><dt>Descuentos</dt><dd>$0</dd></div>
+                        <div class="workflow-summary-row workflow-total"><dt>Total venta</dt><dd id="totalVenta">$0</dd></div>
+                    </dl>
+                    <button class="workflow-action full-width" id="finalizarVenta" type="button" style="margin-top:16px"><i class="fas fa-check-circle"></i> Finalizar venta</button>
+                    <p class="workflow-helper" id="estadoVentaMensaje" role="status" style="text-align:center">Al finalizar se descuenta el stock y se genera la remisión.</p>
+                </div>
+            </section>
+        </aside>
+    </div>
+</section>

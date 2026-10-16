@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/Inicio_Sesion.css">
+    <link rel="stylesheet" href="/css/auth-visual.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Datronix - Registro inicial</title>
+</head>
+<body class="auth-page">
+    <section class="auth-brand">
+        <div><p class="auth-brand-name">Datronix</p><p class="auth-brand-ai">Back-office</p></div>
+        <div class="auth-brand-copy">
+            <h2>Acceso seguro para tu equipo</h2>
+            <p>El primer registro crea la cuenta administradora. Las cuentas de Bodega y Operador se asignan desde Usuarios.</p>
+        </div>
+        <p class="auth-brand-foot"><i class="fas fa-shield-halved"></i> Roles controlados por el administrador</p>
+    </section>
+    <main class="auth-main">
+        <section class="auth-card">
+            <h1>Crear administrador inicial</h1>
+            <p class="auth-description">Completa tus datos para crear la primera cuenta del sistema.</p>
+            <form class="auth-fields" id="formRegistro">
+                <label class="auth-label" for="idUsuario">Cédula
+                    <span class="auth-input-wrap"><i class="fas fa-id-card"></i><input id="idUsuario" name="idUsuario" inputmode="numeric" pattern="[0-9]{6,20}" maxlength="20" required></span>
+                </label>
+                <label class="auth-label" for="nombreUsuario">Nombre completo
+                    <span class="auth-input-wrap"><i class="fas fa-user"></i><input id="nombreUsuario" name="nombreUsuario" minlength="3" maxlength="100" required></span>
+                </label>
+                <label class="auth-label" for="correoUsuario">Correo electrónico
+                    <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoUsuario" name="correoUsuario" type="email" maxlength="255" autocomplete="email" required></span>
+                </label>
+                <label class="auth-label" for="contrasenaUsuario">Contraseña
+                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="contrasenaUsuario" name="contrasenaUsuario" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></span>
+                </label>
+                <button class="auth-button" type="submit">Crear cuenta administradora</button>
+                <p id="estadoRegistro" class="auth-description" role="status"></p>
+                <a class="auth-link-button" href="/html/Inicio_Sesion.html">Volver al inicio de sesión</a>
+            </form>
+        </section>
+    </main>
+    <script type="module" src="/js/registro.js"></script>
+</body>
+</html>

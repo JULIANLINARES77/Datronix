@@ -1,0 +1,42 @@
+<section class="demo-module">
+    <div class="history-header">
+        <h1 class="module-heading history-title">Historial de ventas</h1>
+        <label class="history-search"><i class="fas fa-search"></i><input id="buscarHistorialVentas" placeholder="Buscar por ID de venta o cliente..."></label>
+    </div>
+
+    <div class="crud-kpis four-columns">
+        <article class="crud-kpi"><p class="crud-kpi-label">Ventas del mes</p><p class="crud-kpi-value" id="kpiVentasMes">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Total facturado</p><p class="crud-kpi-value" id="kpiTotalFacturado">$0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Contado</p><p class="crud-kpi-value" id="kpiVentasContado">0%</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Crédito</p><p class="crud-kpi-value" id="kpiVentasCredito">0%</p></article>
+    </div>
+
+    <section class="workflow-panel">
+        <div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table table-wide">
+                <thead><tr><th>ID Venta</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado de pago</th><th>Dirección de entrega</th><th>ID Remisión</th><th>Estado de Bodega</th><th>Detalle</th></tr></thead>
+                <tbody id="historialVentasTbody"><tr><td colspan="9">Cargando historial...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="historialVentasEstado" role="status">Cargando ventas...</span></div>
+        </div>
+    </section>
+
+    <dialog class="native-dialog" id="dialogVentaDetalle" aria-labelledby="tituloVentaDetalle">
+        <header class="native-dialog-header"><h2 id="tituloVentaDetalle">Detalle de venta</h2><button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar"><i class="fas fa-times"></i></button></header>
+        <div class="native-dialog-body">
+            <div class="history-summary">
+                <div><p class="muted">Fecha</p><p><strong id="detalleVentaFecha"></strong></p></div>
+                <div><p class="muted">Estado de pago</p><p><strong id="detalleVentaPago"></strong></p></div>
+                <div><p class="muted">Dirección de entrega</p><p><strong id="detalleVentaDireccion"></strong></p></div>
+            </div>
+            <div class="workflow-table-wrap">
+                <table class="workflow-table table-detail">
+                    <thead><tr><th>ID detalle</th><th>ID producto</th><th>Producto</th><th>Cant.</th><th>Precio</th><th>Desc.</th><th>Subtotal</th></tr></thead>
+                    <tbody id="detalleVentaProductos"></tbody>
+                </table>
+            </div>
+            <div class="remission-card"><strong id="detalleRemisionTitulo">Remisión</strong><p id="detalleRemisionResumen"></p><p id="detalleRemisionEstado"></p><p id="detalleRemisionObservaciones"></p></div>
+            <button class="workflow-action" id="imprimirRemisionVenta" type="button"><i class="fas fa-print"></i> Imprimir remisión</button>
+        </div>
+    </dialog>
+</section>

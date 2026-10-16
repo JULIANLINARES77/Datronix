@@ -28,8 +28,7 @@ async function cargarClientes() {
         renderizarTabla(clientesData);
     } catch (error) {
         console.error('❌ Error al cargar clientes:', error);
-        document.getElementById('tbodyClientes').innerHTML = 
-            `<tr><td colspan="5" class="text-center" style="color:red;">Error: ${error.message}</td></tr>`;
+        document.getElementById('tbodyClientes').textContent = `Error al cargar clientes: ${error.message}`;
     }
 }
 
@@ -42,33 +41,43 @@ function renderizarTabla(data) {
         return;
     }
     if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center">No hay clientes registrados</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center">No hay clientes registrados</td></tr>`;
         return;
     }
+    const escapar = valor => String(valor ?? '-').replace(/[&<>"']/g, caracter => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[caracter]);
     tbody.innerHTML = data.map(c => `
-        <tr data-id="${c.idCliente}">
-            <td>${c.idCliente}</td>
-            <td>${c.nombreCliente}</td>
-            <td>${c.telefonoCliente}</td>
-            <td>${c.emailCliente || '-'}</td>
-            <td>${c.direccionCliente || '-'}</td>
+        <tr data-id="${escapar(c.idCliente)}">
+            <td>${escapar(c.idCliente)}</td>
+            <td>${escapar(c.nombreCliente)}</td>
+            <td>${escapar(c.telefonoCliente)}</td>
+            <td>${escapar(c.emailCliente)}</td>
+            <td>${escapar(c.direccionCliente)}</td>
+            <td>${escapar(c.tipoCliente)}</td>
+            <td><button class="table-icon-button" type="button" aria-label="Editar"><i class="fas fa-pencil-alt"></i></button> <button class="table-icon-button" type="button" aria-label="Eliminar"><i class="fas fa-trash"></i></button></td>
         </tr>
     `).join('');
 }
 
 // ============ BÚSQUEDA ============
-function buscarClientes() {
-    // La búsqueda se hace sobre los datos ya cargados para responder sin otra petición.
+async function buscarClientes() {
     const termino = document.getElementById('txtBuscarCliente').value.trim().toLowerCase();
     if (!termino) {
         renderizarTabla(clientesData);
         return;
     }
-    const filtrados = clientesData.filter(c => 
-        c.idCliente.toLowerCase().includes(termino) || 
-        c.nombreCliente.toLowerCase().includes(termino)
-    );
-    renderizarTabla(filtrados);
+    try {
+        const resultados = await getData(`/clientes/buscar?criterio=${encodeURIComponent(termino)}`);
+        renderizarTabla(resultados);
+    } catch (error) {
+        const tbody = document.getElementById('tbodyClientes');
+        tbody.textContent = `Error al buscar clientes: ${error.message}`;
+    }
 }
 
 // ============ MODALES ============

@@ -1,57 +1,48 @@
 package uniminuto.datronix.controller;
 
-import uniminuto.datronix.entity.Venta;
-import uniminuto.datronix.service.VentaService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import uniminuto.datronix.dto.VentaCreateDTO;
+import uniminuto.datronix.dto.VentaRecienteResponseDTO;
+import uniminuto.datronix.dto.VentaResponseDTO;
+import uniminuto.datronix.service.VentaService;
 
 @RestController
 @RequestMapping("/api/ventas")
-@CrossOrigin(origins = "*") // Permite peticiones desde cualquier origen (útil para desarrollo)
-// Conecta las rutas de ventas con VentaService.
 public class VentaController {
-
     private final VentaService ventaService;
 
     public VentaController(VentaService ventaService) {
         this.ventaService = ventaService;
     }
 
-    // ========== LISTAR TODAS LAS VENTAS ==========
     @GetMapping
-    public List<Venta> listarVentas() {
-        // Recupera todas las ventas registradas.
-        return ventaService.listarVentas();
+    public ResponseEntity<List<VentaResponseDTO>> listarVentas() {
+        return ResponseEntity.ok(ventaService.listarVentas());
     }
 
-    // ========== BUSCAR VENTA POR ID ==========
+    @GetMapping("/recientes")
+    public ResponseEntity<List<VentaRecienteResponseDTO>> listarVentasRecientes() {
+        return ResponseEntity.ok(ventaService.listarVentasRecientes());
+    }
+
     @GetMapping("/{id}")
-    public Venta buscarVentaPorId(@PathVariable Long id) {
-        // Recupera una venta concreta a partir de su ID.
-        return ventaService.buscarVentaPorId(id);
+    public ResponseEntity<VentaResponseDTO> buscarVentaPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ventaService.buscarVentaPorId(id));
     }
 
-    // ========== CREAR NUEVA VENTA ==========
     @PostMapping
-    public Venta guardarVenta(@RequestBody Venta venta) {
-        // Recibe la venta, incluidos sus detalles, y la entrega al servicio para guardarla.
-        return ventaService.guardarVenta(venta);
-    }
-
-    // ========== ELIMINAR VENTA ==========
-    @DeleteMapping("/{id}")
-    public void eliminarVenta(@PathVariable Long id) {
-        // Pide el borrado de la venta indicada.
-        ventaService.eliminarVenta(id);
-    }
-
-    // ========== ACTUALIZAR VENTA ==========
-    @PutMapping("/{id}")
-    public Venta actualizarVenta(@PathVariable Long id, @RequestBody Venta venta) {
-        // Actualmente solo devuelve lo recibido; este endpoint todavía no persiste cambios.
-        // Si quieres implementar actualización, hazlo aquí
-        // Por ahora devolvemos la misma venta (no implementado)
-        return venta;
+    public ResponseEntity<VentaResponseDTO> registrarVenta(@Valid @RequestBody VentaCreateDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ventaService.registrarVenta(request));
     }
 }

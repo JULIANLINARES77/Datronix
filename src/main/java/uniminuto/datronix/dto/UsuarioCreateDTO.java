@@ -26,4 +26,6 @@ public class UsuarioCreateDTO {
     @NotBlank(message = "La contraseña es obligatoria")
     private String contrasenaUsuario;
 
+    @Pattern(regexp = "(?i)ADMINISTRADOR|OPERADOR|BODEGA", message = "El rol debe ser ADMINISTRADOR, OPERADOR o BODEGA")
+    private String rolUsuario;
 }

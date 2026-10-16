@@ -1,5 +1,7 @@
 package uniminuto.datronix.mapper;
 
+import java.util.Locale;
+
 import uniminuto.datronix.dto.UsuarioCreateDTO;
 import uniminuto.datronix.dto.UsuarioResponseDTO;
 import uniminuto.datronix.entity.Usuario;
@@ -28,6 +30,9 @@ public final class UsuarioMapper {
                 .idUsuario(usuario.getIdUsuario())
                 .nombreUsuario(usuario.getNombreUsuario())
                 .correoUsuario(usuario.getCorreoUsuario())
+                .rolUsuario(usuario.getRolUsuario() == null || usuario.getRolUsuario().isBlank()
+                        ? "OPERADOR"
+                        : usuario.getRolUsuario().trim().toUpperCase(Locale.ROOT))
                 .build();
     }
 }

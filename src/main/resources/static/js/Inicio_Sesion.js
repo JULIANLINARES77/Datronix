@@ -17,7 +17,7 @@ function validarUsuario() {
     };
 
     // Enviar datos al backend mediante POST
-    fetch('/api/usuarios/login', {
+    fetch('/api/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -36,9 +36,16 @@ function validarUsuario() {
         }
     })
     .then(data => {
+        const rolUsuario = data.usuario?.rolUsuario || 'OPERADOR';
+        if (rolUsuario === 'BODEGA') {
+            localStorage.setItem('usuario', JSON.stringify(data.usuario));
+            window.location.href = window.DATRONIX_BODEGA_URL || '/bodega/';
+            return;
+        }
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
         // El saludo confirma visualmente el acceso antes de cambiar de pantalla.
         // Login exitoso: mostrar mensaje con el nombre del usuario (si existe)
-        const nombreUsuario = data.nombreUsuario || data.correoUsuario || 'Usuario';
+        const nombreUsuario = data.usuario?.nombreUsuario || data.usuario?.correoUsuario || 'Usuario';
         alert('¡Bienvenido, ' + nombreUsuario + '!');
         
         // ✅ Redirigir a la página principal (ajusta la ruta según tu estructura)

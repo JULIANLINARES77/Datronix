@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar contraseña — Datronix Back-Office</title>
+    <link rel="stylesheet" href="/css/Inicio_Sesion.css">
+    <link rel="stylesheet" href="/css/auth-visual.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="auth-page">
+    <section class="auth-brand">
+        <div><p class="auth-brand-name">Datronix</p><p class="auth-brand-ai">IA</p></div>
+        <div class="auth-brand-copy"><h2>We Transform Data into Intelligent Decisions</h2><p>Back-office centralizado para comercializadoras y distribuidoras: pedidos, inventario, cartera y remisiones en un solo lugar.</p></div>
+        <p class="auth-brand-foot"><i class="fas fa-sparkles"></i> Asistente IA incluido</p>
+    </section>
+    <main class="auth-main">
+        <section class="auth-card">
+            <a class="auth-back-link" href="/html/Inicio_Sesion.html"><i class="fas fa-arrow-left"></i> Volver a iniciar sesión</a>
+            <h1>Recuperar contraseña</h1>
+            <p class="auth-description">Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.</p>
+            <div class="auth-form-stack">
+                <label class="auth-label" for="correoRecuperacion">Correo electrónico
+                    <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoRecuperacion" type="email" placeholder="usuario@empresa.com"></span>
+                </label>
+                <button class="auth-button" type="button">Enviar instrucciones</button>
+                <a class="auth-link-button" href="/html/restablecer.html">Ya verifiqué el código · Definir nueva contraseña</a>
+            </div>
+            <p class="auth-api-note">POST /api/usuarios/recuperar</p>
+        </section>
+    </main>
+</body>
+</html>

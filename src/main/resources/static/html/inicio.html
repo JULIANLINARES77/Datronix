@@ -7,6 +7,8 @@
     <title>Datronix - Panel Principal</title>
     <link rel="stylesheet" href="/css/estilos.css">
     <link rel="stylesheet" href="/css/clientes.css">
+    <link rel="stylesheet" href="/css/migrated-ui.css">
+    <link rel="stylesheet" href="/css/mock-modules.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
 </head>
@@ -15,69 +17,60 @@
     <div class="app-container">
 
         <!-- MENÚ LATERAL (orden alineado con Lovable) -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1>Datronix</h1>
                 <div class="separator"></div>
-                <button class="btn-ia" data-vista="ia">
-                    <i class="fas fa-robot"></i> IA
-                </button>
+                <button class="btn-ia" aria-label="Abrir asistente IA">IA</button>
             </div>
             <nav class="sidebar-nav">
-                <!-- 1. Principal -->
                 <button class="menu-item active" data-vista="principal">
                     <span class="icon"><i class="fas fa-home"></i></span>
                     <span class="label">Principal</span>
                 </button>
-                <!-- 2. Ventas -->
                 <button class="menu-item" data-vista="ventas">
                     <span class="icon"><i class="fas fa-cash-register"></i></span>
-                    <span class="label">Ventas</span>
+                    <span class="label">Nueva venta</span>
                 </button>
-                <!-- 3. Productos -->
-                <button class="menu-item" data-vista="productos">
-                    <span class="icon"><i class="fas fa-boxes"></i></span>
-                    <span class="label">Productos</span>
-                </button>
-                <!-- 4. Clientes -->
-                <button class="menu-item" data-vista="clientes">
-                    <span class="icon"><i class="fas fa-users"></i></span>
-                    <span class="label">Clientes</span>
-                </button>
-                <!-- 5. Proveedores -->
-                <button class="menu-item" data-vista="proveedores">
-                    <span class="icon"><i class="fas fa-truck"></i></span>
-                    <span class="label">Proveedores</span>
-                </button>
-                <!-- 6. Historial y remisiones (antes solo "Historial") -->
                 <button class="menu-item" data-vista="historial">
                     <span class="icon"><i class="fas fa-history"></i></span>
                     <span class="label">Historial y remisiones</span>
                 </button>
-                <!-- 7. Devoluciones -->
+                <button class="menu-item" data-vista="clientes">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span class="label">Clientes</span>
+                </button>
+                <button class="menu-item" data-vista="productos">
+                    <span class="icon"><i class="fas fa-boxes"></i></span>
+                    <span class="label">Productos</span>
+                </button>
+                <button class="menu-item" data-vista="proveedores">
+                    <span class="icon"><i class="fas fa-truck"></i></span>
+                    <span class="label">Proveedores</span>
+                </button>
+                <button class="menu-item" data-vista="compras">
+                    <span class="icon"><i class="fas fa-shopping-cart"></i></span>
+                    <span class="label">Compras</span>
+                </button>
                 <button class="menu-item" data-vista="devoluciones">
                     <span class="icon"><i class="fas fa-undo-alt"></i></span>
                     <span class="label">Devoluciones</span>
                 </button>
-                <!-- 8. Nómina (fusiona Empleados) -->
-                <button class="menu-item" data-vista="nomina">
-                    <span class="icon"><i class="fas fa-file-invoice-dollar"></i></span>
-                    <span class="label">Nómina</span>
-                </button>
-                <!-- 9. Reportes -->
                 <button class="menu-item" data-vista="reportes">
                     <span class="icon"><i class="fas fa-chart-bar"></i></span>
                     <span class="label">Reportes</span>
                 </button>
-                <!-- 10. Soporte -->
+                <button class="menu-item" data-vista="nomina">
+                    <span class="icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                    <span class="label">Nómina</span>
+                </button>
+                <button class="menu-item" data-vista="usuarios">
+                    <span class="icon"><i class="fas fa-shield-alt"></i></span>
+                    <span class="label">Usuarios</span>
+                </button>
                 <button class="menu-item" data-vista="soporte">
                     <span class="icon"><i class="fas fa-headset"></i></span>
                     <span class="label">Soporte</span>
-                </button>
-                <!-- 11. Compras (se mantiene al final, aunque en Lovable no aparece) -->
-                <button class="menu-item" data-vista="compras">
-                    <span class="icon"><i class="fas fa-shopping-cart"></i></span>
-                    <span class="label">Compras</span>
                 </button>
             </nav>
             <button class="btn-salir" id="btnSalir">
@@ -86,20 +79,41 @@
             </button>
         </aside>
 
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="main-content">
+        <div class="main-content">
+            <div class="utility-bar">
+                <button class="mobile-menu-button" id="btnAbrirMenu" aria-label="Abrir menú"><i class="fas fa-bars"></i></button>
+                <span class="utility-slogan"><i class="fas fa-heart"></i> We Transform Data into Intelligent Decisions!</span>
+                <div class="utility-actions">
+                    <div class="utility-search"><i class="fas fa-search"></i><span>Buscar...</span></div>
+                    <button class="utility-icon" aria-label="Notificaciones"><i class="fas fa-bell"></i></button>
+                    <div class="user-avatar" aria-label="Administrador">AD</div>
+                </div>
+            </div>
             <header class="top-bar">
-                <span class="titulo">Administrador / Control / Reportes de ventas</span>
+                <span class="titulo">Administrador/Control/Panel principal</span>
                 <span class="fecha" id="fechaActual">Cargando fecha...</span>
             </header>
-            <div class="content-area">
+            <main class="content-area">
                 <div id="vistaContainer">
                     <!-- Se inyectan los módulos -->
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
+        <button class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Cerrar menú"></button>
+        <div class="assistant-widget">
+            <section class="assistant-panel" id="assistantPanel" aria-label="Datronix IA" hidden>
+                <header class="assistant-header"><i class="fas fa-sparkles"></i><span>Datronix IA</span></header>
+                <div class="assistant-messages" id="assistantMessages" aria-live="polite"></div>
+                <form class="assistant-form" id="assistantForm">
+                    <input id="assistantInput" placeholder="Escribe tu consulta..." aria-label="Escribe tu consulta">
+                    <button class="assistant-send" type="submit" aria-label="Enviar"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </section>
+            <button class="assistant-toggle" id="assistantToggle" type="button" aria-label="Asistente IA" aria-controls="assistantPanel" aria-expanded="false"><i class="fas fa-robot"></i></button>
+        </div>
     </div>
 
+    <script src="/js/app-config.js"></script>
     <script src="/js/inicio.js" type="module"></script>
     
 </body>

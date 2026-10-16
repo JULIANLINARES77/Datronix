@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar acceso por código — Datronix Back-Office</title>
+    <link rel="stylesheet" href="/css/Inicio_Sesion.css">
+    <link rel="stylesheet" href="/css/auth-visual.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="/js/auth-pages.js" defer></script>
+</head>
+<body class="auth-page" data-auth-page="verificar">
+    <section class="auth-brand">
+        <div><p class="auth-brand-name">Datronix</p><p class="auth-brand-ai">IA</p></div>
+        <div class="auth-brand-copy"><h2>Seguridad y control de acceso</h2><p>Si la cuenta se bloquea por exceder el límite de intentos, el ingreso se habilita con un código de verificación enviado al correo corporativo registrado.</p></div>
+        <p class="auth-brand-foot"><i class="fas fa-sparkles"></i> Asistente IA incluido</p>
+    </section>
+    <main class="auth-main">
+        <section class="auth-card">
+            <a class="auth-back-link" href="/html/Inicio_Sesion.html"><i class="fas fa-arrow-left"></i> Volver a iniciar sesión</a>
+            <div class="auth-title-row"><i class="auth-title-icon fas fa-shield-alt"></i><h1>Verificar acceso</h1></div>
+            <p class="auth-description">Cuenta bloqueada por límite de intentos. Confirma tu correo para recibir un código de 6 dígitos válido por 2 minutos.</p>
+            <div class="auth-form-stack">
+                <label class="auth-label" for="correoVerificacion">Correo electrónico
+                    <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoVerificacion" type="email" placeholder="usuario@empresa.com"></span>
+                </label>
+                <button class="auth-button" id="btnEnviarCodigo" type="button">Enviar código al correo</button>
+                <section class="auth-status-panel">
+                    <div class="auth-status-heading"><span>Código de verificación</span><span class="auth-timer" id="temporizadorCodigo"><i class="fas fa-clock"></i><span>02:00</span></span></div>
+                    <div class="verification-code" aria-label="Código de verificación">
+                        <input inputmode="numeric" maxlength="1" aria-label="Dígito 1" disabled>
+                        <input inputmode="numeric" maxlength="1" aria-label="Dígito 2" disabled>
+                        <input inputmode="numeric" maxlength="1" aria-label="Dígito 3" disabled>
+                        <input inputmode="numeric" maxlength="1" aria-label="Dígito 4" disabled>
+                        <input inputmode="numeric" maxlength="1" aria-label="Dígito 5" disabled>
+                        <input inputmode="numeric" maxlength="1" aria-label="Dígito 6" disabled>
+                    </div>
+                    <p class="auth-status-message" id="mensajeCodigo">Primero envía el código a tu correo registrado.</p>
+                </section>
+                <button class="auth-button" id="btnVerificarCodigo" type="button" disabled>Verificar y entrar</button>
+            </div>
+            <p class="auth-api-note">POST /api/usuarios/codigo · POST /api/usuarios/codigo/validar</p>
+        </section>
+    </main>
+</body>
+</html>

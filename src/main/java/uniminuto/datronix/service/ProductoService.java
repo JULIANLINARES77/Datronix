@@ -4,6 +4,7 @@ import uniminuto.datronix.dto.ProductoDTO;
 import uniminuto.datronix.entity.Producto;
 import uniminuto.datronix.entity.Proveedor;
 import uniminuto.datronix.exception.ProductoNotFoundException;
+import uniminuto.datronix.exception.ProductoSkuDuplicadoException;
 import uniminuto.datronix.exception.ProveedorNotFoundException;
 import uniminuto.datronix.mapper.ProductoMapper;
 import uniminuto.datronix.repository.ProductoRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,7 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ProductoDTO buscarProductoPorId(Long id) {
         // Si el producto no existe, se lanza una excepción específica para devolver un error claro.
         Producto producto = productoRepository.findById(id)
@@ -43,46 +46,79 @@ public class ProductoService {
         return ProductoMapper.toDto(producto);
     }
 
-   public ProductoDTO guardarProducto(ProductoDTO dto) {
-    // Nos aseguramos de que la BD genere el ID, ignorando cualquier valor que venga del cliente.
-    dto.setIdProducto(null);
+    @Transactional
+    public ProductoDTO guardarProducto(ProductoDTO dto) {
+        dto.setIdProducto(null);
+        normalizar(dto);
+        validarSku(dto.getSkuProducto(), null);
 
-    Proveedor proveedor = proveedorRepository.findById(dto.getIdProveedor())
-            .orElseThrow(() -> new ProveedorNotFoundException(dto.getIdProveedor()));
+        Proveedor proveedor = proveedorRepository.findById(dto.getIdProveedor())
+                .orElseThrow(() -> new ProveedorNotFoundException(dto.getIdProveedor()));
 
-    Producto producto = ProductoMapper.toEntity(dto, proveedor);
-    Producto guardado = productoRepository.save(producto);
-    return ProductoMapper.toDto(guardado);
-}
+        Producto producto = ProductoMapper.toEntity(dto, proveedor);
+        Producto guardado = productoRepository.save(producto);
+        return ProductoMapper.toDto(guardado);
+    }
 
+    @Transactional
     public ProductoDTO actualizarProducto(Long id, ProductoDTO dto) {
-        // Se edita el registro existente y se conserva su identidad en la base de datos.
         Producto productoExistente = productoRepository.findById(id)
                 .orElseThrow(() -> new ProductoNotFoundException(id));
+        normalizar(dto);
+        validarSku(dto.getSkuProducto(), id);
 
-        // Actualizar campos
+        Proveedor proveedor = proveedorRepository.findById(dto.getIdProveedor())
+                .orElseThrow(() -> new ProveedorNotFoundException(dto.getIdProveedor()));
         productoExistente.setNombreProducto(dto.getNombreProducto());
         productoExistente.setCategoriaProducto(dto.getCategoriaProducto());
         productoExistente.setMarcaProducto(dto.getMarcaProducto());
         productoExistente.setModeloProducto(dto.getModeloProducto());
-        productoExistente.setDescripcionProducto(dto.getDescripcionProducto());
-        productoExistente.setEspecificacionesProducto(dto.getEspecificacionesProducto());
+        if (dto.getDescripcionProducto() != null) {
+            productoExistente.setDescripcionProducto(dto.getDescripcionProducto());
+        }
+        if (dto.getEspecificacionesProducto() != null) {
+            productoExistente.setEspecificacionesProducto(dto.getEspecificacionesProducto());
+        }
         productoExistente.setPrecioCostoProducto(dto.getPrecioCostoProducto());
         productoExistente.setPrecioVentaProducto(dto.getPrecioVentaProducto());
         productoExistente.setStockProducto(dto.getStockProducto());
         productoExistente.setStockMinimoProducto(dto.getStockMinimoProducto());
         productoExistente.setSkuProducto(dto.getSkuProducto());
-
-        // Si se cambió el proveedor, buscarlo y actualizarlo
-        if (dto.getIdProveedor() != null) {
-            // La relación solo se cambia cuando el formulario envía un nuevo proveedor.
-            Proveedor proveedor = proveedorRepository.findById(dto.getIdProveedor())
-                    .orElseThrow(() -> new ProveedorNotFoundException(dto.getIdProveedor()));
-            productoExistente.setProveedor(proveedor);
-        }
+        productoExistente.setProveedor(proveedor);
 
         Producto actualizado = productoRepository.save(productoExistente);
         return ProductoMapper.toDto(actualizado);
+    }
+
+    private void validarSku(String sku, Long idProductoExcluido) {
+        if (sku == null) {
+            return;
+        }
+        boolean duplicado = idProductoExcluido == null
+                ? productoRepository.existsBySkuProductoIgnoreCase(sku)
+                : productoRepository.existsBySkuProductoIgnoreCaseAndIdProductoNot(sku, idProductoExcluido);
+        if (duplicado) {
+            throw new ProductoSkuDuplicadoException(sku);
+        }
+    }
+
+    private void normalizar(ProductoDTO dto) {
+        dto.setNombreProducto(dto.getNombreProducto().trim());
+        dto.setCategoriaProducto(limpiarOpcional(dto.getCategoriaProducto()));
+        dto.setMarcaProducto(limpiarOpcional(dto.getMarcaProducto()));
+        dto.setModeloProducto(limpiarOpcional(dto.getModeloProducto()));
+        dto.setDescripcionProducto(limpiarOpcional(dto.getDescripcionProducto()));
+        dto.setEspecificacionesProducto(limpiarOpcional(dto.getEspecificacionesProducto()));
+        dto.setIdProveedor(dto.getIdProveedor().trim());
+        String sku = limpiarOpcional(dto.getSkuProducto());
+        dto.setSkuProducto(sku == null ? null : sku.toUpperCase(Locale.ROOT));
+    }
+
+    private String limpiarOpcional(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        return valor.trim();
     }
 
     public void eliminarProducto(Long id) {

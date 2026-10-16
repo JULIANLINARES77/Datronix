@@ -2,8 +2,11 @@ package uniminuto.datronix.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -12,6 +15,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 // Describe la cantidad y el valor de un producto incluido en una venta.
 public class DetalleVenta {
 
@@ -22,6 +26,8 @@ public class DetalleVenta {
 
     @ManyToOne
     @JoinColumn(name = "id_venta", referencedColumnName = "id_venta")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Venta venta;
 
     @ManyToOne
@@ -34,9 +40,11 @@ public class DetalleVenta {
     @Column(name = "precio_unitario", precision = 10, scale = 2, nullable = false)
     private BigDecimal precioUnitario;
 
+    @Builder.Default
     @Column(name = "descuento_item", precision = 10, scale = 2)
     private BigDecimal descuentoItem = BigDecimal.ZERO;
 
+    @Builder.Default
     @Column(name = "subtotal_item", precision = 10, scale = 2, nullable = false)
     private BigDecimal subtotalItem = BigDecimal.ZERO;
 }

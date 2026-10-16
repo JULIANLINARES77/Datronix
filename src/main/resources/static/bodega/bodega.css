@@ -1,0 +1,228 @@
+.warehouse-app [hidden] {
+    display: none !important;
+}
+
+.warehouse-app .sidebar-header {
+    padding-bottom: 16px;
+}
+
+.warehouse-brand-label {
+    color: rgb(255 255 255 / 78%);
+    font-size: 11px;
+    letter-spacing: 1.2px;
+}
+
+.warehouse-user {
+    color: var(--ui-muted-foreground);
+    font-size: 13px;
+}
+
+.warehouse-dashboard {
+    display: grid;
+    gap: 16px;
+}
+
+.warehouse-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.warehouse-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ui-border);
+}
+
+.warehouse-list-heading .dashboard-panel-title {
+    padding: 0;
+    border: 0;
+}
+
+.warehouse-refresh {
+    width: auto;
+    min-width: 130px;
+    margin: 0;
+}
+
+.warehouse-list {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+}
+
+.warehouse-order {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--ui-border);
+    border-radius: 8px;
+    background: var(--ui-card);
+}
+
+.warehouse-order-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px 16px;
+}
+
+.warehouse-order-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.warehouse-order-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    color: var(--ui-muted-foreground);
+    font-size: 13px;
+}
+
+.warehouse-state {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.warehouse-items {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.warehouse-items li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ui-border);
+    font-size: 14px;
+}
+
+.warehouse-items li:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.warehouse-notes {
+    margin: 0;
+    color: var(--ui-muted-foreground);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.warehouse-update-form {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(200px, 2fr) auto;
+    align-items: end;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ui-border);
+}
+
+.warehouse-field {
+    display: grid;
+    gap: 6px;
+    color: var(--ui-foreground);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.warehouse-field input,
+.warehouse-field select,
+.warehouse-field textarea {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid var(--ui-border);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ui-foreground);
+    font: inherit;
+}
+
+.warehouse-field textarea {
+    min-height: 38px;
+    resize: vertical;
+}
+
+.warehouse-status {
+    min-height: 20px;
+    margin: 8px 0 0;
+    color: var(--ui-muted-foreground);
+    font-size: 13px;
+}
+
+.warehouse-login {
+    display: grid;
+    min-height: 55vh;
+    place-items: center;
+}
+
+.warehouse-login-card {
+    width: min(100%, 440px);
+}
+
+.warehouse-login-card .dashboard-panel-title {
+    font-size: 18px;
+}
+
+.warehouse-login-card .dashboard-panel-body {
+    display: grid;
+    gap: 16px;
+}
+
+.warehouse-login-card .workflow-action {
+    width: 100%;
+    margin: 0;
+}
+
+.warehouse-empty {
+    padding: 32px 16px;
+    color: var(--ui-muted-foreground);
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .warehouse-update-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .warehouse-update-form button {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .warehouse-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .warehouse-list-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .warehouse-update-form {
+        grid-template-columns: 1fr;
+    }
+
+    .warehouse-update-form button {
+        grid-column: auto;
+    }
+}

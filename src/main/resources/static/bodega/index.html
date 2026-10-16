@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datronix - Bodega</title>
+    <script src="./config.js"></script>
+    <script>
+        const themeBase = window.DATRONIX_BODEGA_CONFIG.assetBaseUrl.replace(/\/$/, '');
+        ['estilos.css', 'migrated-ui.css'].forEach(file => {
+            const stylesheet = document.createElement('link');
+            stylesheet.rel = 'stylesheet';
+            stylesheet.href = `${themeBase}/css/${file}`;
+            document.head.appendChild(stylesheet);
+        });
+    </script>
+    <link rel="stylesheet" href="./bodega.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container warehouse-app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Datronix</h1>
+                <div class="separator"></div>
+                <span class="warehouse-brand-label">OPERACIÓN DE BODEGA</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="menu-item active" type="button">
+                    <span class="icon"><i class="fas fa-boxes-stacked"></i></span>
+                    <span class="label">Remisiones</span>
+                </button>
+            </nav>
+            <button class="btn-salir" id="cerrarSesion" type="button">
+                <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                <span class="label">Cerrar sesión</span>
+            </button>
+        </aside>
+
+        <div class="main-content">
+            <div class="utility-bar">
+                <span class="utility-slogan"><i class="fas fa-heart"></i> We Transform Data into Intelligent Decisions!</span>
+                <div class="utility-actions">
+                    <span id="usuarioBodega" class="warehouse-user"></span>
+                    <div class="user-avatar" aria-label="Usuario de bodega">BD</div>
+                </div>
+            </div>
+            <header class="top-bar">
+                <span class="titulo">Datronix / Bodega / Remisiones</span>
+                <span class="fecha">Preparación y despacho de pedidos</span>
+            </header>
+            <main class="content-area">
+                <section id="pantallaLogin" class="warehouse-login" hidden>
+                    <form id="formLoginBodega" class="dashboard-panel warehouse-login-card">
+                        <h1 class="dashboard-panel-title">Acceso a Bodega</h1>
+                        <div class="dashboard-panel-body">
+                            <label class="warehouse-field">Correo electrónico
+                                <input name="correoUsuario" type="email" autocomplete="username" required>
+                            </label>
+                            <label class="warehouse-field">Contraseña
+                                <input name="contrasenaUsuario" type="password" autocomplete="current-password" required>
+                            </label>
+                            <button class="workflow-action" type="submit">Iniciar sesión</button>
+                            <p id="mensajeLoginBodega" class="warehouse-status" role="status"></p>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="pantallaBodega" class="warehouse-dashboard" hidden>
+                    <div class="warehouse-summary" aria-label="Resumen de remisiones">
+                        <article class="dashboard-card">
+                            <div class="dashboard-card-heading"><span>Pendientes</span><span class="dashboard-card-icon"><i class="fas fa-inbox"></i></span></div>
+                            <p class="dashboard-card-value" id="totalPendientes">0</p>
+                            <p class="dashboard-card-note">Listas para preparar</p>
+                        </article>
+                        <article class="dashboard-card">
+                            <div class="dashboard-card-heading"><span>En preparación</span><span class="dashboard-card-icon"><i class="fas fa-box-open"></i></span></div>
+                            <p class="dashboard-card-value" id="totalPreparacion">0</p>
+                            <p class="dashboard-card-note">Pedidos en alistamiento</p>
+                        </article>
+                        <article class="dashboard-card">
+                            <div class="dashboard-card-heading"><span>Despachadas</span><span class="dashboard-card-icon"><i class="fas fa-truck"></i></span></div>
+                            <p class="dashboard-card-value" id="totalDespachadas">0</p>
+                            <p class="dashboard-card-note">Pendientes por entregar</p>
+                        </article>
+                    </div>
+
+                    <section class="dashboard-panel">
+                        <div class="warehouse-list-heading">
+                            <div>
+                                <h2 class="dashboard-panel-title">Pedidos por preparar y entregar</h2>
+                                <p id="estadoRemisiones" class="dashboard-card-note" role="status">Cargando remisiones...</p>
+                            </div>
+                            <button id="recargarRemisiones" class="workflow-action warehouse-refresh" type="button">
+                                <i class="fas fa-rotate"></i> Actualizar
+                            </button>
+                        </div>
+                        <div id="listaRemisiones" class="warehouse-list"></div>
+                    </section>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script type="module" src="./bodega.js"></script>
+</body>
+</html>

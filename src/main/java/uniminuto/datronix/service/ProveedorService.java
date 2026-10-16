@@ -12,6 +12,7 @@ import uniminuto.datronix.repository.ProveedorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,37 +43,22 @@ public class ProveedorService {
     }
 
     public ProveedorDTO guardarProveedor(ProveedorDTO dto) {
-
+        normalizar(dto);
         if (proveedorRepository.existsById(dto.getIdProveedor())) {
             throw new ProveedorIdDuplicadoException(dto.getIdProveedor());
-
         }
 
-        if (proveedorRepository.existsByNombreEmpresa(dto.getNombreEmpresa())) {
-            throw new ProveedorDuplicadoException(dto.getNombreEmpresa());
-
-        }
-
-        if (proveedorRepository.existsByTelefonoProveedor(dto.getTelefonoProveedor())) {
-            throw new ProveedorTelefonoDuplicadoException(dto.getTelefonoProveedor());
-        }
-
-        if (proveedorRepository.existsByEmailProveedor(dto.getEmailProveedor())) {
-
-            throw new ProveedorEmailDuplicadoException(dto.getEmailProveedor());
-
-        }
-        // El DTO se transforma en entidad, se guarda y se vuelve a convertir para la
-        // respuesta.
+        validarDuplicados(dto, null);
         Proveedor proveedor = ProveedorMapper.toEntity(dto);
         Proveedor guardado = proveedorRepository.save(proveedor);
         return ProveedorMapper.toDto(guardado);
     }
 
     public ProveedorDTO actualizarProveedor(String id, ProveedorDTO dto) {
-        // Se conserva el proveedor encontrado y se actualizan sus datos editables.
         Proveedor proveedorExistente = proveedorRepository.findById(id)
                 .orElseThrow(() -> new ProveedorNotFoundException(id));
+        normalizar(dto);
+        validarDuplicados(dto, id);
 
         proveedorExistente.setNombreEmpresa(dto.getNombreEmpresa());
         proveedorExistente.setContactoProveedor(dto.getContactoProveedor());
@@ -82,6 +68,52 @@ public class ProveedorService {
 
         Proveedor actualizado = proveedorRepository.save(proveedorExistente);
         return ProveedorMapper.toDto(actualizado);
+    }
+
+    private void validarDuplicados(ProveedorDTO dto, String idProveedorExcluido) {
+        boolean nombreDuplicado = idProveedorExcluido == null
+                ? proveedorRepository.existsByNombreEmpresaIgnoreCase(dto.getNombreEmpresa())
+                : proveedorRepository.existsByNombreEmpresaIgnoreCaseAndIdProveedorNot(
+                        dto.getNombreEmpresa(), idProveedorExcluido);
+        if (nombreDuplicado) {
+            throw new ProveedorDuplicadoException(dto.getNombreEmpresa());
+        }
+
+        boolean telefonoDuplicado = idProveedorExcluido == null
+                ? proveedorRepository.existsByTelefonoProveedor(dto.getTelefonoProveedor())
+                : proveedorRepository.existsByTelefonoProveedorAndIdProveedorNot(
+                        dto.getTelefonoProveedor(), idProveedorExcluido);
+        if (telefonoDuplicado) {
+            throw new ProveedorTelefonoDuplicadoException(dto.getTelefonoProveedor());
+        }
+
+        if (dto.getEmailProveedor() != null) {
+            boolean emailDuplicado = idProveedorExcluido == null
+                    ? proveedorRepository.existsByEmailProveedorIgnoreCase(dto.getEmailProveedor())
+                    : proveedorRepository.existsByEmailProveedorIgnoreCaseAndIdProveedorNot(
+                            dto.getEmailProveedor(), idProveedorExcluido);
+            if (emailDuplicado) {
+            throw new ProveedorEmailDuplicadoException(dto.getEmailProveedor());
+            }
+        }
+    }
+
+    private void normalizar(ProveedorDTO dto) {
+        dto.setIdProveedor(dto.getIdProveedor().trim());
+        dto.setNombreEmpresa(dto.getNombreEmpresa().trim());
+        dto.setContactoProveedor(limpiarOpcional(dto.getContactoProveedor()));
+        dto.setEmailProveedor(limpiarOpcional(dto.getEmailProveedor()));
+        if (dto.getEmailProveedor() != null) {
+            dto.setEmailProveedor(dto.getEmailProveedor().toLowerCase(Locale.ROOT));
+        }
+        dto.setDireccionProveedor(limpiarOpcional(dto.getDireccionProveedor()));
+    }
+
+    private String limpiarOpcional(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        return valor.trim();
     }
 
     public void eliminarProveedor(String id) {

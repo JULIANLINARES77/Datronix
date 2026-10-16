@@ -28,8 +28,8 @@ async function cargarProveedores() {
         renderizarTabla(proveedoresData);
     } catch (error) {
         console.error('❌ Error al cargar proveedores:', error);
-        document.getElementById('tbodyProveedores').innerHTML =
-            `<tr><td colspan="6" class="text-center" style="color:red;">Error: ${error.message}</td></tr>`;
+        document.getElementById('tbodyProveedores').textContent =
+            `Error al cargar proveedores: ${error.message}`;
     }
 }
 
@@ -42,17 +42,25 @@ function renderizarTabla(data) {
         return;
     }
     if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center">No hay proveedores registrados</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center">No hay proveedores registrados</td></tr>`;
         return;
     }
+    const escapar = valor => String(valor ?? '-').replace(/[&<>"']/g, caracter => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[caracter]);
     tbody.innerHTML = data.map(p => `
-        <tr data-id="${p.idProveedor}">
-            <td>${p.idProveedor}</td>
-            <td>${p.nombreEmpresa}</td>
-            <td>${p.contactoProveedor || '-'}</td>
-            <td>${p.telefonoProveedor}</td>
-            <td>${p.emailProveedor || '-'}</td>
-            <td>${p.direccionProveedor || '-'}</td>
+        <tr data-id="${escapar(p.idProveedor)}">
+            <td>${escapar(p.idProveedor)}</td>
+            <td>${escapar(p.nombreEmpresa)}</td>
+            <td>${escapar(p.contactoProveedor)}</td>
+            <td>${escapar(p.telefonoProveedor)}</td>
+            <td>${escapar(p.emailProveedor)}</td>
+            <td>${escapar(p.direccionProveedor)}</td>
+            <td><button class="table-icon-button" type="button" aria-label="Editar"><i class="fas fa-pencil-alt"></i></button> <button class="table-icon-button" type="button" aria-label="Eliminar"><i class="fas fa-trash"></i></button></td>
         </tr>
     `).join('');
 }

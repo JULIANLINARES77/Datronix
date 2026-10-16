@@ -2,8 +2,11 @@ package uniminuto.datronix.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +18,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 // Representa una venta, su cliente y la lista de productos vendidos.
 public class Venta {
 
@@ -34,12 +38,15 @@ public class Venta {
     private BigDecimal totalVenta;
 
     @Column(name = "estado_pago", length = 20)
-    private String estadoPago; // "CONTADO" o "CREDITO"
+    private String estadoPago;
 
     @Column(name = "direccion_entrega", length = 255)
-    private String direccionEntrega; // Nueva: dirección de despacho
+    private String direccionEntrega;
 
+    @Builder.Default
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<DetalleVenta> detalleVentaList = new ArrayList<>();
 
 

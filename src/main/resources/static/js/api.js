@@ -5,14 +5,9 @@ const API_BASE = '/api';
 
 // Todas las pantallas usan estas funciones para hablar con el backend sin repetir fetch.
 
-// Función para obtener headers (con autenticación si la tienes)
+// Función para obtener los headers JSON comunes a las peticiones.
 function getHeaders() {
-    // El token, si existe, viaja en cada petición para que el backend pueda identificarla.
-    const token = localStorage.getItem('token');
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : ''
-    };
+    return { 'Content-Type': 'application/json' };
 }
 
 // ========== MÉTODOS GENÉRICOS ==========

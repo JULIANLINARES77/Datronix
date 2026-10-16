@@ -1,0 +1,69 @@
+<section class="demo-module">
+    <div class="reports-heading"><h1 class="module-heading">Reportes</h1><p class="reports-note">Consultas calculadas a partir de los registros actuales.</p></div>
+
+    <div class="crud-kpis four-columns">
+        <article class="crud-kpi"><p class="crud-kpi-label">Ingresos del mes</p><p class="crud-kpi-value" id="reporteIngresosMes">$0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Ventas realizadas</p><p class="crud-kpi-value" id="reporteVentasMes">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Cartera en crédito</p><p class="crud-kpi-value" id="reporteCarteraCredito">$0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Stock crítico</p><p class="crud-kpi-value" id="reporteStockCritico">0</p></article>
+    </div>
+
+    <div class="report-tabs" role="tablist" aria-label="Tipos de reporte">
+        <button class="report-tab" id="tab-stock" role="tab" aria-selected="true" aria-controls="report-stock" data-report-tab="stock">Stock bajo</button>
+        <button class="report-tab" id="tab-productos" role="tab" aria-selected="false" aria-controls="report-productos" data-report-tab="productos">Top productos</button>
+        <button class="report-tab" id="tab-clientes" role="tab" aria-selected="false" aria-controls="report-clientes" data-report-tab="clientes">Clientes frecuentes</button>
+        <button class="report-tab" id="tab-meses" role="tab" aria-selected="false" aria-controls="report-meses" data-report-tab="meses">Ventas por mes</button>
+        <button class="report-tab" id="tab-creditos" role="tab" aria-selected="false" aria-controls="report-creditos" data-report-tab="creditos">Créditos pendientes</button>
+    </div>
+
+    <section class="report-content workflow-panel" id="report-stock" role="tabpanel" aria-labelledby="tab-stock" data-report-panel="stock">
+        <h2 class="dashboard-panel-title">Inventario crítico (stock actual &lt;= stock mínimo)</h2>
+        <div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>ID Producto</th><th>Nombre</th><th>Stock actual</th><th>Stock mínimo</th></tr></thead>
+                <tbody id="reporteStockTbody"><tr><td colspan="4">Cargando reporte...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="reporteStockEstado" role="status">Cargando reporte...</span></div>
+        </div>
+    </section>
+
+    <section class="report-content workflow-panel" id="report-productos" role="tabpanel" aria-labelledby="tab-productos" data-report-panel="productos" hidden>
+        <h2 class="dashboard-panel-title">Top 10 productos más vendidos</h2>
+        <div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>ID Producto</th><th>Producto</th><th>Total vendido</th><th>Ingresos generados</th></tr></thead>
+                <tbody id="reporteProductosTbody"><tr><td colspan="4">Cargando reporte...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="reporteProductosEstado" role="status">Cargando reporte...</span></div>
+        </div>
+    </section>
+
+    <section class="report-content workflow-panel" id="report-clientes" role="tabpanel" aria-labelledby="tab-clientes" data-report-panel="clientes" hidden>
+        <h2 class="dashboard-panel-title">Clientes frecuentes</h2>
+        <div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>Cliente</th><th>N° de compras</th><th>Total invertido</th><th>Promedio de compra</th><th>Última compra</th></tr></thead>
+                <tbody id="reporteClientesTbody"><tr><td colspan="5">Cargando reporte...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="reporteClientesEstado" role="status">Cargando reporte...</span></div>
+        </div>
+    </section>
+
+    <section class="report-content workflow-panel" id="report-meses" role="tabpanel" aria-labelledby="tab-meses" data-report-panel="meses" hidden>
+        <h2 class="dashboard-panel-title">Ventas por mes (últimos 12 meses)</h2>
+        <div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>Mes</th><th>Año</th><th>N° de ventas</th><th>Total mes</th><th>Promedio venta</th></tr></thead>
+                <tbody id="reporteMesesTbody"><tr><td colspan="5">Cargando reporte...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="reporteMesesEstado" role="status">Cargando reporte...</span></div>
+        </div>
+    </section>
+
+    <section class="report-content workflow-panel" id="report-creditos" role="tabpanel" aria-labelledby="tab-creditos" data-report-panel="creditos" hidden>
+        <h2 class="dashboard-panel-title">Ventas registradas a crédito</h2>
+        <p class="reports-note">El sistema aún no registra abonos; se muestran todas las ventas con estado CREDITO.</p>
+        <div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>ID Venta</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Días transcurridos</th><th>Estado</th></tr></thead>
+                <tbody id="reporteCreditosTbody"><tr><td colspan="6">Cargando reporte...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="reporteCreditosEstado" role="status">Cargando reporte...</span></div>
+        </div>
+    </section>
+</section>

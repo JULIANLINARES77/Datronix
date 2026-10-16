@@ -57,8 +57,8 @@ async function cargarProductos() {
         renderizarTabla(productosData);
     } catch (error) {
         console.error('❌ Error al cargar productos:', error);
-        document.getElementById('tbodyProductos').innerHTML =
-            `<tr><td colspan="10" class="text-center" style="color:red;">Error: ${error.message}</td></tr>`;
+        document.getElementById('tbodyProductos').textContent =
+            `Error al cargar productos: ${error.message}`;
     }
 }
 
@@ -71,21 +71,32 @@ function renderizarTabla(data) {
         return;
     }
     if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center">No hay productos registrados</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" class="text-center">No hay productos registrados</td></tr>`;
         return;
     }
+    const escapar = valor => String(valor ?? '-').replace(/[&<>"']/g, caracter => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[caracter]);
     tbody.innerHTML = data.map(p => `
-        <tr data-id="${p.idProducto}">
-            <td>${p.idProducto}</td>
-            <td>${p.nombreProducto}</td>
-            <td>${p.categoriaProducto || '-'}</td>
-            <td>${p.marcaProducto || '-'}</td>
-            <td>${p.modeloProducto || '-'}</td>
-            <td>${p.precioCostoProducto}</td>
-            <td>${p.precioVentaProducto}</td>
-            <td>${p.stockProducto}</td>
-            <td>${p.stockMinimoProducto}</td>
-            <td>${p.idProveedor || '-'}</td> <!-- Mostramos el ID del proveedor -->
+        <tr data-id="${escapar(p.idProducto)}">
+            <td>${escapar(p.idProducto)}</td>
+            <td>${escapar(p.nombreProducto)}</td>
+            <td>${escapar(p.categoriaProducto)}</td>
+            <td>${escapar(p.marcaProducto)}</td>
+            <td>${escapar(p.modeloProducto)}</td>
+            <td>${escapar(p.descripcionProducto)}</td>
+            <td>${escapar(p.especificacionesProducto)}</td>
+            <td>${escapar(p.skuProducto)}</td>
+            <td>${escapar(p.precioCostoProducto)}</td>
+            <td>${escapar(p.precioVentaProducto)}</td>
+            <td>${escapar(p.stockProducto)}</td>
+            <td>${escapar(p.stockMinimoProducto)}</td>
+            <td>${escapar(p.idProveedor)}</td>
+            <td><button class="table-icon-button" type="button" aria-label="Editar"><i class="fas fa-pencil-alt"></i></button> <button class="table-icon-button" type="button" aria-label="Eliminar"><i class="fas fa-trash"></i></button></td>
         </tr>
     `).join('');
 }
@@ -100,7 +111,8 @@ function buscarProductos() {
     }
     const filtrados = productosData.filter(p =>
         p.idProducto.toString().includes(termino) ||
-        p.nombreProducto.toLowerCase().includes(termino)
+        p.nombreProducto.toLowerCase().includes(termino) ||
+        (p.skuProducto && p.skuProducto.toLowerCase().includes(termino))
     );
     renderizarTabla(filtrados);
 }
@@ -134,6 +146,7 @@ function abrirModalEditar() {
     cargarProveedores().then(() => {
         document.getElementById('txtIdProductoEdit').value = producto.idProducto;
         document.getElementById('txtNombreProductoEdit').value = producto.nombreProducto;
+        document.getElementById('txtSkuProductoEdit').value = producto.skuProducto || '';
         document.getElementById('txtCategoriaProductoEdit').value = producto.categoriaProducto || '';
         document.getElementById('txtMarcaProductoEdit').value = producto.marcaProducto || '';
         document.getElementById('txtModeloProductoEdit').value = producto.modeloProducto || '';
@@ -159,6 +172,7 @@ async function guardarProducto() {
     // Lee y valida el formulario antes de enviar un nuevo producto al backend.
     // El ID no se lee porque lo genera la base de datos.
     const nombre = document.getElementById('txtNombreProducto').value.trim();
+    const sku = document.getElementById('txtSkuProducto').value.trim();
     const categoria = document.getElementById('txtCategoriaProducto').value.trim();
     const marca = document.getElementById('txtMarcaProducto').value.trim();
     const modelo = document.getElementById('txtModeloProducto').value.trim();
@@ -184,6 +198,7 @@ async function guardarProducto() {
         precioVentaProducto: precioVenta,
         stockProducto: stock,
         stockMinimoProducto: stockMinimo,
+        skuProducto: sku || null,
         idProveedor: idProveedor   // Campo plano, como String
     };
 
@@ -202,6 +217,7 @@ async function guardarProductoEdit() {
     // Envía los cambios del producto seleccionado y refresca la tabla local.
     const id = parseInt(document.getElementById('txtIdProductoEdit').value);
     const nombre = document.getElementById('txtNombreProductoEdit').value.trim();
+    const sku = document.getElementById('txtSkuProductoEdit').value.trim();
     const categoria = document.getElementById('txtCategoriaProductoEdit').value.trim();
     const marca = document.getElementById('txtMarcaProductoEdit').value.trim();
     const modelo = document.getElementById('txtModeloProductoEdit').value.trim();
@@ -227,14 +243,15 @@ async function guardarProductoEdit() {
         precioVentaProducto: precioVenta,
         stockProducto: stock,
         stockMinimoProducto: stockMinimo,
+        skuProducto: sku || null,
         idProveedor: idProveedor   // Campo plano, como String
     };
 
     try {
-        await putData(`/productos/${id}`, productoActualizado);
+        const actualizado = await putData(`/productos/${id}`, productoActualizado);
         const index = productosData.findIndex(p => p.idProducto === id);
         if (index !== -1) {
-            productosData[index] = productoActualizado;
+            productosData[index] = actualizado;
         }
         renderizarTabla(productosData);
         cerrarModalEditar();
@@ -267,6 +284,7 @@ async function eliminarProducto() {
 // ============ LIMPIAR FORMULARIOS ============
 function limpiarFormularioAgregar() {
     document.getElementById('txtNombreProducto').value = '';
+    document.getElementById('txtSkuProducto').value = '';
     document.getElementById('txtCategoriaProducto').value = '';
     document.getElementById('txtMarcaProducto').value = '';
     document.getElementById('txtModeloProducto').value = '';
@@ -280,6 +298,7 @@ function limpiarFormularioAgregar() {
 function limpiarFormularioEditar() {
     document.getElementById('txtIdProductoEdit').value = '';
     document.getElementById('txtNombreProductoEdit').value = '';
+    document.getElementById('txtSkuProductoEdit').value = '';
     document.getElementById('txtCategoriaProductoEdit').value = '';
     document.getElementById('txtMarcaProductoEdit').value = '';
     document.getElementById('txtModeloProductoEdit').value = '';

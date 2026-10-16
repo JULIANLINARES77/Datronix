@@ -31,6 +31,18 @@ public class ClienteService {
                 .collect(Collectors.toList());
     }
 
+    public List<ClienteDTO> buscarClientes(String criterio) {
+        String termino = criterio == null ? "" : criterio.trim();
+        if (termino.isEmpty()) {
+            return listarClientes();
+        }
+        return clienteRepository
+                .findByIdClienteContainingIgnoreCaseOrNombreClienteContainingIgnoreCase(termino, termino)
+                .stream()
+                .map(ClienteMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     // BUSCAR POR ID → devuelve ClienteDTO
     public ClienteDTO buscarClientePorId(String id) {
         // Un ID inexistente se transforma en una excepción que luego maneja la

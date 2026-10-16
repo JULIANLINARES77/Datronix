@@ -2,6 +2,7 @@ package uniminuto.datronix.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 // Contiene la información de las personas que trabajan en la empresa.
 public class Empleado {
 

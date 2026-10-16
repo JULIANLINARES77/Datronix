@@ -1,24 +1,25 @@
 <!-- Este fragmento se inserta en el panel y productos.js conecta sus controles. -->
-<div class="modulo-clientes">
-    <div class="top-bar-modulo">
-        <span class="titulo-modulo">📦 Productos</span>
-        <div class="user-info-modulo">
-            <span>Usuario: <strong id="nombreUsuarioModulo">Cargando...</strong></span>
+<div class="modulo-clientes crud-module">
+    <span class="module-username-hidden" id="nombreUsuarioModulo"></span>
+    <!-- Barra de herramientas -->
+    <div class="toolbar-clientes">
+        <h1 class="crud-heading">Productos</h1>
+        <div class="busqueda">
+            <input type="text" id="txtBuscarProducto" placeholder="Buscar por ID o nombre...">
+            <button class="btn icon-only" id="btnBuscarProducto" aria-label="Buscar" title="Buscar"><i class="fas fa-search"></i></button>
+            <button class="btn icon-only" id="btnActualizarProducto" aria-label="Actualizar" title="Actualizar"><i class="fas fa-rotate"></i></button>
+        </div>
+        <div class="acciones">
+            <button class="btn icon-only" id="btnModificarProducto" aria-label="Editar producto seleccionado" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+            <button class="btn btn-danger icon-only" id="btnEliminarProducto" aria-label="Eliminar producto seleccionado" title="Eliminar"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-primary" id="btnAgregarProducto"><i class="fas fa-plus"></i> Agregar producto</button>
         </div>
     </div>
 
-    <!-- Barra de herramientas -->
-    <div class="toolbar-clientes">
-        <div class="busqueda">
-            <input type="text" id="txtBuscarProducto" placeholder="Buscar por ID o nombre...">
-            <button class="btn btn-primary" id="btnBuscarProducto">Buscar</button>
-            <button class="btn btn-outline" id="btnActualizarProducto">↻ Actualizar</button>
-        </div>
-        <div class="acciones">
-            <button class="btn btn-primary" id="btnAgregarProducto">+ Agregar</button>
-            <button class="btn btn-primary" id="btnModificarProducto">✎ Modificar</button>
-            <button class="btn btn-danger" id="btnEliminarProducto">🗑 Eliminar</button>
-        </div>
+    <div class="crud-kpis">
+        <article class="crud-kpi"><p class="crud-kpi-label">Referencias</p><p class="crud-kpi-value">562</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Stock bajo</p><p class="crud-kpi-value">9</p><p class="dashboard-card-note">Requiere reposición</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Valor inventario</p><p class="crud-kpi-value">$210.450.000</p></article>
     </div>
 
     <!-- Tabla de productos -->
@@ -31,18 +32,24 @@
                     <th>Categoría</th>
                     <th>Marca</th>
                     <th>Modelo</th>
+                    <th>Descripción</th>
+                    <th>Especificaciones</th>
+                    <th>SKU</th>
                     <th>Precio Costo</th>
                     <th>Precio Venta</th>
                     <th>Stock</th>
                     <th>Stock Mínimo</th>
                     <th>Proveedor</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbodyProductos">
-                <tr><td colspan="10" class="text-center">Cargando productos...</td></tr>
+                <tr><td colspan="14" class="text-center">Cargando productos...</td></tr>
             </tbody>
         </table>
+        <p class="crud-note">Los valores en rojo indican stock por debajo del stock mínimo.</p>
     </div>
+    <span class="crud-stock-critical">Stock crítico</span>
 </div>
 
 <!-- Modal Agregar Producto -->
@@ -57,6 +64,10 @@
             <div class="form-group">
                 <label>NOMBRE DEL PRODUCTO</label>
                 <input type="text" id="txtNombreProducto" placeholder="Nombre" required>
+            </div>
+            <div class="form-group">
+                <label>SKU (OPCIONAL)</label>
+                <input type="text" id="txtSkuProducto" maxlength="50" placeholder="Código único">
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -124,6 +135,10 @@
             <div class="form-group">
                 <label>NOMBRE DEL PRODUCTO</label>
                 <input type="text" id="txtNombreProductoEdit" placeholder="Nombre" required>
+            </div>
+            <div class="form-group">
+                <label>SKU (OPCIONAL)</label>
+                <input type="text" id="txtSkuProductoEdit" maxlength="50" placeholder="Código único">
             </div>
             <div class="form-row">
                 <div class="form-group">

@@ -1,0 +1,82 @@
+<section class="demo-module">
+    <h1 class="module-heading">Gestión de compras</h1>
+
+    <div class="crud-kpis four-columns">
+        <article class="crud-kpi"><p class="crud-kpi-label">Compras del mes</p><p class="crud-kpi-value" id="kpiComprasMes">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Total comprado</p><p class="crud-kpi-value" id="kpiTotalComprado">$0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Proveedores con compras</p><p class="crud-kpi-value" id="kpiProveedoresCompra">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Productos ingresados</p><p class="crud-kpi-value" id="kpiUnidadesCompra">0</p></article>
+    </div>
+
+    <div class="workflow-layout">
+        <section class="workflow-panel">
+            <h2 class="dashboard-panel-title">Registrar compra</h2>
+            <div class="workflow-panel-body">
+                <div class="workflow-fields">
+                    <div class="workflow-field span-all">
+                        <span>Proveedor</span>
+                        <div class="workflow-search-row">
+                            <div class="workflow-search-box"><i class="fas fa-search"></i><input id="proveedorBusqueda" placeholder="Buscar por ID o empresa..."></div>
+                            <button class="workflow-action" id="buscarProveedor" type="button">Buscar</button>
+                        </div>
+                        <div class="purchase-provider-message workflow-helper" id="proveedorMessage">Seleccione un proveedor registrado.</div>
+                        <div class="purchase-provider-card" id="proveedorSeleccionado" hidden></div>
+                    </div>
+                    <label class="workflow-field">Fecha de compra
+                        <span class="purchase-date-row"><i class="fas fa-calendar"></i><input id="fechaCompra" name="fechaCompra" type="date" required></span>
+                    </label>
+                </div>
+
+                <section class="purchase-cart">
+                    <h3>Productos comprados</h3>
+                    <div class="purchase-product-grid">
+                        <div class="purchase-autocomplete">
+                            <div class="workflow-search-box"><i class="fas fa-search"></i><input id="productoBusqueda" placeholder="Buscar producto..."></div>
+                            <div class="purchase-suggestions" id="productoSugerencias" role="listbox" hidden></div>
+                        </div>
+                        <input class="workflow-input" id="cantidadProducto" type="number" min="1" value="1" aria-label="Cantidad">
+                        <input class="workflow-input" id="precioProducto" type="number" min="0" value="" aria-label="Precio unitario">
+                        <button class="workflow-action" id="agregarProductoCompra" type="button" aria-label="Agregar producto"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="workflow-table-wrap" style="margin-top:12px">
+                        <table class="workflow-table" style="min-width:480px">
+                            <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal calculado</th><th></th></tr></thead>
+                            <tbody id="filasCompra"><tr><td colspan="5" class="empty-cart">Agrega al menos un producto.</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <div class="purchase-total-row">
+                    <div><span class="muted-text">Total compra: </span><strong id="totalCompra">$0</strong></div>
+                    <button class="workflow-action" id="registrarCompra" type="button"><i class="fas fa-check-circle"></i> Registrar compra</button>
+                </div>
+                <p class="workflow-helper" id="purchaseStatus" role="status">Agrega productos para registrar la compra.</p>
+            </div>
+        </section>
+
+        <section class="workflow-panel">
+            <h2 class="dashboard-panel-title">Listado de compras</h2>
+            <div class="workflow-panel-body">
+                <div class="purchase-filters">
+                    <label class="workflow-search-box"><i class="fas fa-calendar"></i><input id="filtroFechaCompra" type="date"></label>
+                    <label class="workflow-search-box"><i class="fas fa-filter"></i><input id="filtroProveedorCompra" placeholder="Proveedor..."></label>
+                </div>
+                <div class="workflow-table-wrap">
+                    <table class="workflow-table">
+                        <thead><tr><th>ID</th><th>Fecha</th><th>Proveedor</th><th>Total</th><th>Acciones</th></tr></thead>
+                        <tbody id="comprasTbody"><tr><td colspan="5" class="empty-cart">Cargando compras...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <dialog class="native-dialog" id="dialogCompraDetalle" aria-labelledby="tituloCompraDetalle">
+        <header class="native-dialog-header"><h2 id="tituloCompraDetalle">Detalle de compra</h2><button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar"><i class="fas fa-times"></i></button></header>
+        <div class="native-dialog-body">
+            <div class="purchase-detail-summary"><div><p class="muted-text">Fecha</p><strong id="detalleFecha"></strong></div><div><p class="muted-text">Proveedor</p><strong id="detalleProveedor"></strong></div></div>
+            <div class="workflow-table-wrap"><table class="workflow-table"><thead><tr><th>Producto</th><th>Cant.</th><th>P. unit.</th><th>Subtotal calculado</th></tr></thead><tbody id="detalleProductos"></tbody></table></div>
+            <div class="purchase-total-row"><strong>Total</strong><strong id="detalleTotal"></strong></div>
+        </div>
+    </dialog>
+</section>

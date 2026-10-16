@@ -1,0 +1,53 @@
+<section class="demo-module">
+    <div class="module-toolbar">
+        <h1 class="module-heading">Nómina y empleados</h1>
+        <div class="acciones">
+            <button class="workflow-action" type="button" data-open-dialog="dialogEmpleado"><i class="fas fa-plus"></i> Agregar empleado</button>
+            <button class="workflow-action" type="button" data-open-dialog="dialogPago"><i class="fas fa-plus"></i> Registrar pago</button>
+        </div>
+    </div>
+
+    <div class="crud-kpis">
+        <article class="crud-kpi"><p class="crud-kpi-label">Empleados registrados</p><p class="crud-kpi-value" id="kpiEmpleados">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Período</p><p class="crud-kpi-value" id="kpiPeriodoNomina">—</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Total pagado</p><p class="crud-kpi-value" id="kpiTotalNomina">$0</p></article>
+    </div>
+
+    <div class="payroll-tables">
+        <section class="workflow-panel"><h2 class="dashboard-panel-title">Empleados</h2><div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>ID empleado</th><th>Nombre</th><th>Cargo</th><th>Correo</th><th>Teléfono</th><th>Fecha de ingreso</th><th>Salario base</th><th>Acciones</th></tr></thead><tbody id="empleadosTbody"><tr><td colspan="8">Cargando empleados...</td></tr></tbody></table>
+            <div class="table-footer"><span id="empleadosEstado" role="status">Cargando empleados...</span></div>
+        </div></section>
+        <section class="workflow-panel"><h2 class="dashboard-panel-title">Pagos registrados</h2><div class="workflow-panel-body workflow-table-wrap">
+            <table class="workflow-table"><thead><tr><th>ID nómina</th><th>ID empleado</th><th>Empleado</th><th>Período</th><th>Fecha de pago</th><th>Salario pagado</th></tr></thead><tbody id="nominaTbody"><tr><td colspan="6">Cargando pagos...</td></tr></tbody></table>
+            <div class="table-footer"><span id="nominaEstado" role="status">Cargando pagos...</span></div>
+        </div></section>
+    </div>
+
+    <dialog class="native-dialog" id="dialogEmpleado" aria-labelledby="tituloDialogEmpleado">
+        <header class="native-dialog-header"><h2 id="tituloDialogEmpleado">Agregar empleado</h2><button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar"><i class="fas fa-times"></i></button></header>
+        <form class="native-dialog-body payroll-form" id="formEmpleado">
+            <div class="payroll-field-grid">
+                <label class="workflow-field">ID (Cédula)<input name="idEmpleado" maxlength="20" required></label><label class="workflow-field">Nombre<input name="nombreEmpleado" maxlength="100" required></label>
+                <label class="workflow-field">Cargo<input name="cargo" maxlength="50" required></label><label class="workflow-field">Correo<input name="correoEmpleado" type="email" maxlength="100"></label>
+                <label class="workflow-field">Teléfono<input name="telefonoEmpleado" maxlength="20"></label><label class="workflow-field">Fecha de ingreso<input name="fechaIngreso" type="date" required></label>
+                <label class="workflow-field span-all">Salario base<input name="salarioBase" type="number" min="0.01" step="0.01" required></label>
+            </div>
+            <p class="workflow-helper" id="formEmpleadoEstado" role="status"></p>
+            <div class="dialog-action-row"><button class="workflow-action secondary" type="button" data-close-dialog>Cancelar</button><button class="workflow-action" type="submit">Guardar</button></div>
+        </form>
+    </dialog>
+
+    <dialog class="native-dialog" id="dialogPago" aria-labelledby="tituloDialogPago">
+        <header class="native-dialog-header"><h2 id="tituloDialogPago">Registrar pago de nómina</h2><button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar"><i class="fas fa-times"></i></button></header>
+        <form class="native-dialog-body payroll-form" id="formPagoNomina">
+            <div class="payroll-field-grid">
+                <label class="workflow-field span-all">Empleado (ID)<select name="idEmpleado" required><option value="">Seleccionar...</option></select></label>
+                <label class="workflow-field">Fecha de pago<input name="fechaPago" type="date" required></label><label class="workflow-field">Salario pagado<input name="salarioPagado" type="number" min="0.01" step="0.01" required></label>
+                <label class="workflow-field span-all">Período<input name="periodo" type="month" required></label>
+            </div>
+            <p class="workflow-helper" id="formPagoEstado" role="status"></p>
+            <div class="dialog-action-row"><button class="workflow-action secondary" type="button" data-close-dialog>Cancelar</button><button class="workflow-action" type="submit">Registrar pago</button></div>
+        </form>
+    </dialog>
+</section>

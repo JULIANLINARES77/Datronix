@@ -2,6 +2,7 @@ package uniminuto.datronix.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 // Representa el documento que acompaña o entrega una operación de mercancía.
 public class Remision {
 
@@ -37,4 +39,12 @@ public class Remision {
 
     @Column(name = "observaciones", length = 500)
     private String observaciones;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_bodega", length = 20)
+    private EstadoRemisionBodega estadoBodega = EstadoRemisionBodega.PENDIENTE;
+
+    @Column(name = "observaciones_bodega", length = 500)
+    private String observacionesBodega;
 }

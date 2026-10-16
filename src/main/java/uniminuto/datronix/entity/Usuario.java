@@ -30,4 +30,7 @@ public class Usuario {
 
     @Column(name = "contrasenausuario", nullable = false, length = 255)
     private String contrasenaUsuario;
+
+    @Column(name = "rol_usuario", length = 20)
+    private String rolUsuario;
 }

@@ -1,0 +1,43 @@
+<section class="demo-module">
+    <div class="crud-kpis two-columns">
+        <article class="crud-kpi"><div class="dashboard-card-heading"><span>Usuarios registrados</span><span class="dashboard-card-icon"><i class="fas fa-users"></i></span></div><p class="crud-kpi-value" id="kpiUsuarios">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Correos únicos</p><p class="crud-kpi-value" id="kpiCorreosUsuarios">0</p><p class="dashboard-card-note">El correo tiene restricción única en la base de datos</p></article>
+    </div>
+
+    <div class="users-layout">
+        <section class="workflow-panel">
+            <h2 class="dashboard-panel-title">Registrar nuevo usuario</h2>
+            <div class="workflow-panel-body">
+                <form class="users-form" id="formUsuario">
+                    <label class="workflow-field">Cédula (ID usuario)<input name="idUsuario" maxlength="20" required></label>
+                    <label class="workflow-field">Nombre completo<input name="nombreUsuario" maxlength="100" required></label>
+                    <label class="workflow-field">Correo<input name="correoUsuario" type="email" maxlength="100" required></label>
+                    <label class="workflow-field">Contraseña<input name="contrasenaUsuario" type="password" minlength="8" maxlength="72" required></label>
+                    <label class="workflow-field">Rol
+                        <select name="rolUsuario" required>
+                            <option value="OPERADOR">Operador</option>
+                            <option value="BODEGA">Bodega</option>
+                            <option value="ADMINISTRADOR">Administrador</option>
+                        </select>
+                    </label>
+                    <button class="workflow-action" type="submit">Guardar usuario</button>
+                    <p class="workflow-helper" id="estadoUsuario" role="status"></p>
+                </form>
+            </div>
+        </section>
+
+        <section class="workflow-panel">
+            <h2 class="dashboard-panel-title">Usuarios del sistema</h2>
+            <div class="workflow-panel-body">
+                <label class="history-search users-search"><i class="fas fa-search"></i><input id="buscarUsuarios" placeholder="Buscar por cédula, nombre o correo..."></label>
+                <div class="workflow-table-wrap">
+                    <table class="workflow-table">
+                        <thead><tr><th>ID usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Guardar / eliminar</th></tr></thead>
+                        <tbody id="usuariosTbody"><tr><td colspan="5">Cargando usuarios...</td></tr></tbody>
+                    </table>
+                    <div class="table-footer"><span id="usuariosEstado" role="status">Cargando usuarios...</span></div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>

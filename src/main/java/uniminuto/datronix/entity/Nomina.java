@@ -2,6 +2,7 @@ package uniminuto.datronix.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 // Guarda los datos de pago o nómina relacionados con un empleado.
 public class Nomina {
 

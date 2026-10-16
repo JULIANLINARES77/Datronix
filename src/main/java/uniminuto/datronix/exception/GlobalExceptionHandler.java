@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manejador global de errores.
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // Usuario no encontrado
     @ExceptionHandler(UsuarioNotFoundException.class)
@@ -56,10 +59,128 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductoNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleProductoNotFound(ProductoNotFoundException ex) {
         ErrorResponseDTO error = ErrorResponseDTO.builder()
-                .codigo("PROV-001")
+                .codigo("PROD-001")
                 .mensaje(ex.getMessage())
                 .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(CompraNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCompraNotFound(CompraNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ErrorResponseDTO.builder()
+                        .codigo("COM-001")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(CompraTotalExcedidoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCompraTotalExcedido(CompraTotalExcedidoException ex) {
+        return ResponseEntity.badRequest().body(
+                ErrorResponseDTO.builder()
+                        .codigo("COM-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(StockLimiteExcedidoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStockLimiteExcedido(StockLimiteExcedidoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                        .codigo("INV-001")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStockInsuficiente(StockInsuficienteException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                        .codigo("INV-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(VentaNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleVentaNotFound(VentaNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ErrorResponseDTO.builder()
+                        .codigo("VENT-001")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(VentaTotalExcedidoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleVentaTotalExcedido(VentaTotalExcedidoException ex) {
+        return ResponseEntity.badRequest().body(
+                ErrorResponseDTO.builder()
+                        .codigo("VENT-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(EmpleadoNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleEmpleadoNotFound(EmpleadoNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ErrorResponseDTO.builder()
+                        .codigo("EMP-001")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(EmpleadoDuplicadoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleEmpleadoDuplicado(EmpleadoDuplicadoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                        .codigo("EMP-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(UltimoAdministradorException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUltimoAdministrador(UltimoAdministradorException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                        .codigo("USU-005")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(RolUsuarioInvalidoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRolUsuarioInvalido(RolUsuarioInvalidoException ex) {
+        return ResponseEntity.badRequest().body(
+                ErrorResponseDTO.builder()
+                        .codigo("USU-006")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(RemisionBodegaNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRemisionBodegaNotFound(RemisionBodegaNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ErrorResponseDTO.builder()
+                        .codigo("BOD-001")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(EstadoRemisionBodegaInvalidoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleEstadoRemisionBodegaInvalido(
+            EstadoRemisionBodegaInvalidoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                        .codigo("BOD-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(ProductoSkuDuplicadoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProductoSkuDuplicado(ProductoSkuDuplicadoException ex) {
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .codigo("PROD-002")
+                .mensaje(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     // Si el Id proveedor existe antes de crearlo -> 409
@@ -129,8 +250,18 @@ public class GlobalExceptionHandler {
     }
 
     // 5. Cualquier otro error no controlado → 500
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(NoResourceFoundException ex) {
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .codigo("GEN-404")
+                .mensaje("No se encontró el recurso solicitado.")
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
+        LOGGER.error("Unhandled request exception.", ex);
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .codigo("GEN-500")
                 .mensaje("Ocurrió un error interno en el servidor. Contacta al administrador.")

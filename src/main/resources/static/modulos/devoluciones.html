@@ -1,0 +1,41 @@
+<section class="demo-module">
+    <h1 class="module-heading">Devoluciones</h1>
+
+    <div class="crud-kpis">
+        <article class="crud-kpi"><p class="crud-kpi-label">Devoluciones del mes</p><p class="crud-kpi-value" id="kpiDevolucionesMes">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Unidades reingresadas</p><p class="crud-kpi-value" id="kpiUnidadesDevueltas">0</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Tasa de devolución</p><p class="crud-kpi-value" id="kpiTasaDevolucion">0%</p></article>
+    </div>
+
+    <div class="two-panel-layout">
+        <section class="workflow-panel">
+            <h2 class="dashboard-panel-title">Registrar devolución</h2>
+            <div class="workflow-panel-body">
+                <div class="workflow-fields one-column">
+                    <label class="workflow-field">Producto
+                        <div class="purchase-autocomplete">
+                            <div class="workflow-search-box"><i class="fas fa-search"></i><input id="productoDevolucionBusqueda" placeholder="Buscar producto por ID o nombre..."></div>
+                            <div class="purchase-suggestions" id="productoDevolucionSugerencias" role="listbox" hidden></div>
+                        </div>
+                    </label>
+                    <label class="workflow-field">Nombre del cliente<input id="nombreClienteDevolucion" maxlength="100"></label>
+                    <label class="workflow-field">Cantidad<input id="cantidadDevolucion" type="number" min="1" value="1" required></label>
+                    <label class="workflow-field">Motivo<textarea id="motivoDevolucion" maxlength="255" rows="3" placeholder="Producto defectuoso..."></textarea></label>
+                    <label class="workflow-field">Fecha y hora de devolución<input id="fechaDevolucion" type="datetime-local" required></label>
+                </div>
+                <button class="workflow-action full-width" id="registrarDevolucion" type="button" style="margin-top:16px"><i class="fas fa-undo-alt"></i> Registrar devolución</button>
+                <p class="workflow-helper" id="estadoDevolucion" role="status" style="text-align:center">El registro requiere producto, cantidad y fecha de devolución.</p>
+            </div>
+        </section>
+
+        <section class="workflow-panel">
+            <h2 class="dashboard-panel-title">Devoluciones recientes</h2>
+            <div class="workflow-panel-body workflow-table-wrap">
+                <table class="workflow-table">
+                    <thead><tr><th>ID</th><th>Producto</th><th>Cliente</th><th>Cantidad</th><th>Motivo</th><th>Fecha</th></tr></thead>
+                    <tbody id="devolucionesTbody"><tr><td colspan="6">Cargando devoluciones...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>

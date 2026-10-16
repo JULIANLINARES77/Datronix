@@ -1,23 +1,24 @@
 <!-- Este fragmento se inserta en el panel y clientes.js conecta sus controles. -->
-<div class="modulo-clientes">
-    <div class="top-bar-modulo">
-        <span class="titulo-modulo">👥 Clientes</span>
-        <div class="user-info-modulo">
-            <span>Usuario: <strong id="nombreUsuarioModulo">Cargando...</strong></span>
+<div class="modulo-clientes crud-module">
+    <span class="module-username-hidden" id="nombreUsuarioModulo"></span>
+    <div class="toolbar-clientes">
+        <h1 class="crud-heading">Clientes</h1>
+        <div class="busqueda">
+            <input type="text" id="txtBuscarCliente" placeholder="Buscar por ID o nombre...">
+            <button class="btn icon-only" id="btnBuscarCliente" aria-label="Buscar" title="Buscar"><i class="fas fa-search"></i></button>
+            <button class="btn icon-only" id="btnActualizarCliente" aria-label="Actualizar" title="Actualizar"><i class="fas fa-rotate"></i></button>
+        </div>
+        <div class="acciones">
+            <button class="btn icon-only" id="btnModificarCliente" aria-label="Editar cliente seleccionado" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+            <button class="btn btn-danger icon-only" id="btnEliminarCliente" aria-label="Eliminar cliente seleccionado" title="Eliminar"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-primary" id="btnAgregarCliente"><i class="fas fa-plus"></i> Agregar cliente</button>
         </div>
     </div>
 
-    <div class="toolbar-clientes">
-        <div class="busqueda">
-            <input type="text" id="txtBuscarCliente" placeholder="Buscar por ID o nombre...">
-            <button class="btn btn-primary" id="btnBuscarCliente">Buscar</button>
-            <button class="btn btn-outline" id="btnActualizarCliente">↻ Actualizar</button>
-        </div>
-        <div class="acciones">
-            <button class="btn btn-primary" id="btnAgregarCliente">+ Agregar</button>
-            <button class="btn btn-primary" id="btnModificarCliente">✎ Modificar</button>
-            <button class="btn btn-danger" id="btnEliminarCliente">🗑 Eliminar</button>
-        </div>
+    <div class="crud-kpis">
+        <article class="crud-kpi"><p class="crud-kpi-label">Clientes registrados</p><p class="crud-kpi-value">1.284</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Nuevos este mes</p><p class="crud-kpi-value">34</p></article>
+        <article class="crud-kpi"><p class="crud-kpi-label">Con crédito pendiente</p><p class="crud-kpi-value">12</p></article>
     </div>
 
     <div class="table-container">
@@ -29,10 +30,12 @@
                     <th>Teléfono</th>
                     <th>Gmail</th>
                     <th>Dirección</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbodyClientes">
-                <tr><td colspan="5" class="text-center">Cargando clientes...</td></tr>
+                <tr><td colspan="7" class="text-center">Cargando clientes...</td></tr>
             </tbody>
         </table>
     </div>

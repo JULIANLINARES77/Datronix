@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/clientes")
-@CrossOrigin(origins = "*")
 // Recibe las peticiones web de clientes y deja el trabajo de negocio en ClienteService.
 public class ClienteController {
 
@@ -27,6 +27,11 @@ public class ClienteController {
         return ResponseEntity.ok(clientes); // 200 OK
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ClienteDTO>> buscarClientes(@RequestParam String criterio) {
+        return ResponseEntity.ok(clienteService.buscarClientes(criterio));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> buscarPorId(@PathVariable String id) {
         // Busca un cliente concreto; si no existe, el servicio informa el error correspondiente.
@@ -35,7 +40,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> guardarCliente(@RequestBody ClienteDTO dto) {
+    public ResponseEntity<ClienteDTO> guardarCliente(@Valid @RequestBody ClienteDTO dto) {
         // Recibe los datos del formulario, crea el cliente y responde con estado 201.
         ClienteDTO creado = clienteService.guardarCliente(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado); // 201 CREATED
@@ -44,7 +49,7 @@ public class ClienteController {
     @PutMapping("/{id}")
     public ResponseEntity<ClienteDTO> actualizarCliente(
             @PathVariable String id,
-            @RequestBody ClienteDTO dto) {
+            @Valid @RequestBody ClienteDTO dto) {
         // Usa el ID de la URL para encontrar el registro que debe reemplazarse.
         ClienteDTO actualizado = clienteService.actualizarCliente(id, dto);
         return ResponseEntity.ok(actualizado); // 200 OK

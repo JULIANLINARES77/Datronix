@@ -1,25 +1,54 @@
 <!-- Vista de bienvenida que se muestra al entrar al panel principal. -->
-<div class="modulo-principal" style="max-width: 900px; margin: 0 auto; padding: 20px; text-align: center;">
-
-    <div class="welcome-message" style="font-size: 28px; margin-bottom: 10px; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);">
-        ¡Bienvenido al Sistema de Gestión Datronix!
+<section class="dashboard" aria-label="Panel principal Datronix">
+    <div class="dashboard-kpis">
+        <article class="dashboard-card">
+            <div class="dashboard-card-heading"><span>Ingresos del mes</span><span class="dashboard-card-icon"><i class="fas fa-dollar-sign"></i></span></div>
+            <p class="dashboard-card-value" id="dashboardIngresos">$0</p>
+            <p class="dashboard-card-note" id="dashboardPeriodo">Cargando...</p>
+            <p class="dashboard-card-note" id="dashboardVariacionIngresos">Comparación vs. mes anterior: Cargando...</p>
+        </article>
+        <article class="dashboard-card">
+            <div class="dashboard-card-heading"><span>Productos con stock bajo</span><span class="dashboard-card-icon"><i class="fas fa-exclamation-triangle"></i></span></div>
+            <p class="dashboard-card-value" id="dashboardStockCritico">0</p><p class="dashboard-card-note">En o por debajo del mínimo</p>
+        </article>
+        <article class="dashboard-card">
+            <div class="dashboard-card-heading"><span>Clientes con crédito pendiente</span><span class="dashboard-card-icon"><i class="fas fa-credit-card"></i></span></div>
+            <p class="dashboard-card-value" id="dashboardCartera">$0</p><p class="dashboard-card-note">Ventas registradas con estado CREDITO</p>
+        </article>
+        <article class="dashboard-card">
+            <div class="dashboard-card-heading"><span>Ventas del mes</span><span class="dashboard-card-icon"><i class="fas fa-receipt"></i></span></div>
+            <p class="dashboard-card-value" id="dashboardVentas">0</p><p class="dashboard-card-note">Ventas registradas en el período actual</p>
+        </article>
     </div>
 
-    <div style="font-size: 22px; color: #7dd3fc; margin-bottom: 30px; font-weight: 500; letter-spacing: 1px;">
-        Tu aliado estratégico para una administración eficiente e inteligente
+    <div class="dashboard-middle">
+        <section class="dashboard-panel">
+            <h2 class="dashboard-panel-title">Ventas por mes (últimos 12 meses)</h2>
+            <div class="dashboard-panel-body">
+                <div class="sales-chart" id="dashboardGraficoVentas" role="img" aria-label="Cargando ventas mensuales"></div>
+                <p class="dashboard-card-note" id="dashboardEstado" role="status">Cargando indicadores...</p>
+            </div>
+        </section>
+        <section class="dashboard-panel">
+            <h2 class="dashboard-panel-title">Accesos rápidos</h2>
+            <div class="dashboard-panel-body quick-links">
+                <button class="quick-link" type="button" data-vista="ventas">Registrar nueva venta</button>
+                <button class="quick-link" type="button" data-vista="clientes">Agregar cliente</button>
+                <button class="quick-link" type="button" data-vista="productos">Actualizar inventario</button>
+                <button class="quick-link" type="button" data-vista="devoluciones">Registrar devolución</button>
+                <button class="quick-link" type="button" data-vista="reportes">Ver reportes</button>
+            </div>
+        </section>
     </div>
 
-    <div style="background: rgba(10, 17, 40, 0.4); border-radius: 16px; padding: 30px; border: 1px solid rgba(0, 240, 255, 0.2); backdrop-filter: blur(4px);">
-        <p style="font-size: 18px; line-height: 1.8; color: #cbd5e1; text-align: justify;">
-            Con nuestra plataforma integral, transformamos la gestión empresarial en una experiencia fluida
-            y poderosa. Controla todos los aspectos de tu negocio desde un solo lugar: inventario, ventas,
-            compras, proveedores y nómina, con reportes en tiempo real que te permiten tomar decisiones
-            basadas en datos precisos.
-        </p>
-    </div>
-
-    <div style="margin-top: 30px; font-size: 20px; color: #00f0ff; font-weight: 600; text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);">
-        Descubre el poder de tener toda tu información trabajando para ti.
-    </div>
-
-</div>
+    <section class="dashboard-panel">
+        <h2 class="dashboard-panel-title">Últimas ventas registradas</h2>
+        <div class="dashboard-panel-body dashboard-table-wrap">
+            <table class="dashboard-table">
+                <thead><tr><th>ID Venta</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado de pago</th></tr></thead>
+                <tbody id="dashboardUltimasVentas"><tr><td colspan="5">Cargando ventas...</td></tr></tbody>
+            </table>
+            <div class="table-footer"><span id="dashboardVentasEstado" role="status">Cargando ventas...</span></div>
+        </div>
+    </section>
+</section>
