@@ -121,7 +121,7 @@ function inicializarVerificacion() {
             const result = await response.json();
             if (!response.ok) throw new Error(result.mensaje || 'No fue posible validar el código.');
             localStorage.setItem('usuario', JSON.stringify(result.usuario));
-            window.location.href = result.usuario.rolUsuario === 'BODEGA' ? '/bodega/' : '/html/inicio.html';
+            window.location.replace(result.usuario.rolUsuario === 'BODEGA' ? '/bodega/' : '/html/inicio.html');
         } catch (error) {
             message.textContent = error.message;
             verifyButton.disabled = false;
@@ -199,7 +199,7 @@ function inicializarRestablecimiento() {
             const result = await response.json();
             if (!response.ok) throw new Error(result.mensaje || 'No fue posible restablecer la contraseña.');
             status.textContent = result.mensaje;
-            window.setTimeout(() => { window.location.href = '/html/Inicio_Sesion.html'; }, 1200);
+            window.setTimeout(() => { window.location.replace('/html/Inicio_Sesion.html'); }, 1200);
         } catch (error) {
             status.textContent = error.message;
             submit.disabled = false;

@@ -10,7 +10,7 @@ document.getElementById('formRegistro').addEventListener('submit', async event =
         await postData('/usuarios', Object.fromEntries(new FormData(form).entries()));
         estado.textContent = 'Cuenta creada. Redirigiendo al inicio de sesión...';
         window.setTimeout(() => {
-            window.location.href = '/html/Inicio_Sesion.html';
+            window.location.replace('/html/Inicio_Sesion.html');
         }, 900);
     } catch (error) {
         let mensaje = error.message;

@@ -224,7 +224,7 @@ btnSalir.addEventListener('click', function () {
     // Solo se abandona la pantalla principal después de pedir confirmación.
     if (confirm('¿Estás seguro de que quieres salir de Datronix?')) {
         localStorage.removeItem('usuario');
-        window.location.href = '/html/Inicio_Sesion.html';
+        window.location.replace('/html/Inicio_Sesion.html');
     }
 });
 

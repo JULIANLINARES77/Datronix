@@ -42,7 +42,7 @@ function validarUsuario() {
         const rolUsuario = data.usuario?.rolUsuario || 'OPERADOR';
         if (rolUsuario === 'BODEGA') {
             localStorage.setItem('usuario', JSON.stringify(data.usuario));
-            window.location.href = window.DATRONIX_BODEGA_URL || '/bodega/';
+            window.location.replace(window.DATRONIX_BODEGA_URL || '/bodega/');
             return;
         }
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
@@ -52,13 +52,13 @@ function validarUsuario() {
         alert('¡Bienvenido, ' + nombreUsuario + '!');
         
         // ✅ Redirigir a la página principal (ajusta la ruta según tu estructura)
-        window.location.href = '/html/inicio.html';
+        window.location.replace('/html/inicio.html');
     })
     .catch(error => {
         if (error.codigo === 'AUTH-423') {
             const correo = encodeURIComponent(correoUsuario);
             const bloqueadaHasta = encodeURIComponent(error.bloqueadaHasta);
-            window.location.href = `/html/verificar.html?correo=${correo}&bloqueadaHasta=${bloqueadaHasta}`;
+            window.location.replace(`/html/verificar.html?correo=${correo}&bloqueadaHasta=${bloqueadaHasta}`);
             return;
         }
         alert(error.message);

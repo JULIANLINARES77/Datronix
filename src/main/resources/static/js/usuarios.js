@@ -120,7 +120,7 @@ async function actualizarRol(idUsuario) {
         if (sessionUser?.idUsuario === idUsuario) {
             localStorage.removeItem('usuario');
             window.alert('Tu rol cambió. Inicia sesión de nuevo para abrir la interfaz correspondiente.');
-            window.location.href = '/html/Inicio_Sesion.html';
+            window.location.replace('/html/Inicio_Sesion.html');
             return;
         }
         await cargarUsuarios();

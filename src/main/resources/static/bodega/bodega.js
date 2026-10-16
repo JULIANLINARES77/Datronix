@@ -242,7 +242,7 @@ document.getElementById('recargarRemisiones').addEventListener('click', cargarRe
 ordersList.addEventListener('submit', actualizarRemision);
 document.getElementById('cerrarSesion').addEventListener('click', () => {
     localStorage.removeItem('usuario');
-    window.location.href = config.mainLoginUrl;
+    window.location.replace(config.mainLoginUrl);
 });
 
 const session = getSession();
