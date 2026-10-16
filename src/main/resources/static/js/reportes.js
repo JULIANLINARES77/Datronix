@@ -1,4 +1,7 @@
 import { getData } from './api.js';
+import { descargarExcel } from './excel-export.js';
+
+let datosReporteActuales = null;
 
 function dineroReporte(valor) {
     return `$${Number(valor || 0).toLocaleString('es-CO')}`;
@@ -253,10 +256,70 @@ function construirPdfReporte(panel, boton) {
     boton.focus();
 }
 
+function exportarReporteExcel(panel, boton) {
+    const tipo = panel.dataset.reportPanel;
+    const especificacion = {
+        stock: {
+            nombre: 'Stock bajo',
+            encabezados: ['ID Producto', 'Nombre', 'Stock actual', 'Stock mínimo'],
+            filas: datosReporteActuales.stockBajo.map(item => [
+                String(item.idProducto), item.nombreProducto, Number(item.stockActual), Number(item.stockMinimo)
+            ])
+        },
+        productos: {
+            nombre: 'Top productos',
+            encabezados: ['ID Producto', 'Producto', 'Total vendido', 'Ingresos generados'],
+            filas: datosReporteActuales.productosMasVendidos.map(item => [
+                String(item.idProducto), item.nombreProducto,
+                Number(item.unidadesVendidas), Number(item.ingresosGenerados)
+            ])
+        },
+        clientes: {
+            nombre: 'Clientes frecuentes',
+            encabezados: ['Cliente', 'Documento', 'Nº de compras', 'Total invertido', 'Promedio de compra', 'Última compra'],
+            filas: datosReporteActuales.clientesFrecuentes.map(item => [
+                item.nombreCliente, String(item.idCliente), Number(item.numeroCompras),
+                Number(item.totalInvertido), Number(item.promedioCompra), item.ultimaCompra || ''
+            ])
+        },
+        meses: {
+            nombre: 'Ventas por mes',
+            encabezados: ['Mes', 'Año', 'Nº de ventas', 'Total mes', 'Promedio venta'],
+            filas: datosReporteActuales.ventasPorMes.map(item => [
+                item.nombreMes, Number(item.anio), Number(item.cantidadVentas),
+                Number(item.totalMes), Number(item.promedioVenta)
+            ])
+        },
+        creditos: {
+            nombre: 'Créditos pendientes',
+            encabezados: ['ID Venta', 'Cliente', 'Fecha', 'Total', 'Días transcurridos', 'Estado'],
+            filas: datosReporteActuales.creditosPendientes.map(item => [
+                String(item.idVenta), item.nombreCliente, item.fechaVenta,
+                Number(item.total), Number(item.diasTranscurridos), 'Pendiente'
+            ])
+        }
+    }[tipo];
+    if (!especificacion) return;
+
+    const kpis = [
+        ['Indicador', 'Valor'],
+        ['Ingresos del mes', document.getElementById('reporteIngresosMes').textContent],
+        ['Ventas realizadas', Number(datosReporteActuales.ventasMes)],
+        ['Cartera en crédito', document.getElementById('reporteCarteraCredito').textContent],
+        ['Stock crítico', Number(datosReporteActuales.productosStockCritico)]
+    ];
+    descargarExcel(`datronix-reporte-${tipo}-${new Date().toISOString().slice(0, 10)}.xls`, [
+        { nombre: 'Resumen', filas: kpis },
+        { nombre: especificacion.nombre, filas: [especificacion.encabezados, ...especificacion.filas] }
+    ]);
+    boton.focus();
+}
+
 function inicializarReportes() {
     const tabs = [...document.querySelectorAll('[data-report-tab]')];
     const panels = [...document.querySelectorAll('[data-report-panel]')];
     const botonPdf = document.getElementById('descargarReportePdf');
+    const botonExcel = document.getElementById('descargarReporteExcel');
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
@@ -269,14 +332,21 @@ function inicializarReportes() {
         const panel = panels.find(item => !item.hidden);
         if (panel) construirPdfReporte(panel, botonPdf);
     });
+    botonExcel.addEventListener('click', () => {
+        const panel = panels.find(item => !item.hidden);
+        if (panel && datosReporteActuales) exportarReporteExcel(panel, botonExcel);
+    });
     getData('/reportes/dashboard')
         .then(reporte => {
+            datosReporteActuales = reporte;
             renderizarDashboardReporte(reporte);
             botonPdf.disabled = false;
+            botonExcel.disabled = false;
         })
         .catch(error => {
             const message = `No se pudieron cargar los reportes: ${errorReporte(error)}`;
             botonPdf.disabled = true;
+            botonExcel.disabled = true;
             document.querySelectorAll('[id$="Estado"]').forEach(status => {
                 status.textContent = message;
             });

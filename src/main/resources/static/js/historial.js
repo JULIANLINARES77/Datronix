@@ -1,4 +1,5 @@
 import { getData } from './api.js';
+import { descargarExcel } from './excel-export.js';
 
 let ventasHistorial = [];
 
@@ -33,6 +34,36 @@ function actualizarEstadoHistorial(mensaje) {
     if (estado) estado.textContent = mensaje;
 }
 
+function ventasFiltradasHistorial() {
+    const filtro = document.getElementById('buscarHistorialVentas').value.trim().toLowerCase();
+    return ventasHistorial.filter(venta =>
+        String(venta.idVenta).includes(filtro) ||
+        String(venta.nombreCliente || '').toLowerCase().includes(filtro) ||
+        String(venta.idCliente || '').toLowerCase().includes(filtro)
+    );
+}
+
+function exportarHistorialExcel() {
+    const filas = ventasFiltradasHistorial().map(venta => [
+        String(venta.idVenta),
+        venta.nombreCliente || '',
+        venta.idCliente || '',
+        venta.fechaVenta || '',
+        Number(venta.totalVenta || 0),
+        venta.estadoPago || '',
+        venta.direccionEntrega || '',
+        venta.remision ? String(venta.remision.idRemision) : '',
+        venta.remision ? estadoBodegaHistorial(venta.remision.estadoBodega) : ''
+    ]);
+    descargarExcel(`datronix-historial-ventas-${new Date().toISOString().slice(0, 10)}.xls`, [{
+        nombre: 'Historial de ventas',
+        filas: [[
+            'ID Venta', 'Cliente', 'Documento cliente', 'Fecha', 'Total',
+            'Estado de pago', 'Dirección de entrega', 'ID Remisión', 'Estado de Bodega'
+        ], ...filas]
+    }]);
+}
+
 function actualizarKpisHistorial() {
     const ahora = new Date();
     const mes = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}`;
@@ -49,12 +80,7 @@ function actualizarKpisHistorial() {
 
 function renderizarHistorial() {
     const tbody = document.getElementById('historialVentasTbody');
-    const filtro = document.getElementById('buscarHistorialVentas').value.trim().toLowerCase();
-    const filtradas = ventasHistorial.filter(venta =>
-        String(venta.idVenta).includes(filtro) ||
-        String(venta.nombreCliente || '').toLowerCase().includes(filtro) ||
-        String(venta.idCliente || '').toLowerCase().includes(filtro)
-    );
+    const filtradas = ventasFiltradasHistorial();
     tbody.replaceChildren();
     if (filtradas.length === 0) {
         const row = tbody.insertRow();
@@ -155,10 +181,13 @@ async function inicializarHistorial() {
         if (button) mostrarDetalleVenta(button.dataset.ventaId);
     });
     document.getElementById('imprimirRemisionVenta').addEventListener('click', () => window.print());
+    const botonExcel = document.getElementById('descargarHistorialExcel');
+    botonExcel.addEventListener('click', exportarHistorialExcel);
     try {
         ventasHistorial = await getData('/ventas');
         actualizarKpisHistorial();
         renderizarHistorial();
+        botonExcel.disabled = false;
     } catch (error) {
         actualizarEstadoHistorial(`No se pudo cargar el historial: ${mensajeErrorHistorial(error)}`);
     }
