@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,4 +34,15 @@ public class Usuario {
 
     @Column(name = "rol_usuario", length = 20)
     private String rolUsuario;
+
+    @Builder.Default
+    @Column(name = "login_failed_attempts", nullable = false, columnDefinition = "integer default 0")
+    private int loginFailedAttempts = 0;
+
+    @Builder.Default
+    @Column(name = "login_lock_level", nullable = false, columnDefinition = "integer default 0")
+    private int loginLockLevel = 0;
+
+    @Column(name = "login_locked_until")
+    private Instant loginLockedUntil;
 }

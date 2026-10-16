@@ -19,13 +19,17 @@ import uniminuto.datronix.entity.Usuario;
 import uniminuto.datronix.exception.RolUsuarioInvalidoException;
 import uniminuto.datronix.exception.UltimoAdministradorException;
 import uniminuto.datronix.repository.UsuarioRepository;
+import uniminuto.datronix.repository.EmailVerificationCodeRepository;
 import uniminuto.datronix.service.UsuarioService;
 
 class UsuarioServiceTest {
     private final UsuarioRepository usuarioRepository = Mockito.mock(UsuarioRepository.class);
+    private final EmailVerificationCodeRepository codeRepository =
+            Mockito.mock(EmailVerificationCodeRepository.class);
     private final PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
     private final JdbcTemplate jdbcTemplate = Mockito.mock(JdbcTemplate.class);
-    private final UsuarioService service = new UsuarioService(usuarioRepository, passwordEncoder, jdbcTemplate);
+    private final UsuarioService service = new UsuarioService(
+            usuarioRepository, codeRepository, passwordEncoder, jdbcTemplate);
 
     @Test
     void eliminarUsuarioRejectsRemovingLastAdministrator() {

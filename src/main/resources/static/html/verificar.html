@@ -20,6 +20,13 @@
             <a class="auth-back-link" href="/html/Inicio_Sesion.html"><i class="fas fa-arrow-left"></i> Volver a iniciar sesión</a>
             <div class="auth-title-row"><i class="auth-title-icon fas fa-shield-alt"></i><h1>Verificar acceso</h1></div>
             <p class="auth-description">Cuenta bloqueada por límite de intentos. Confirma tu correo para recibir un código de 6 dígitos válido por 2 minutos.</p>
+            <section class="auth-status-panel" id="estadoBloqueo" hidden>
+                <div class="auth-status-heading">
+                    <span>Tiempo para volver a ingresar con contraseña</span>
+                    <span class="auth-timer" id="temporizadorBloqueo" aria-live="polite"><i class="fas fa-clock"></i><span></span></span>
+                </div>
+                <p class="auth-status-message" id="mensajeBloqueo">La cuenta está temporalmente bloqueada.</p>
+            </section>
             <div class="auth-form-stack">
                 <label class="auth-label" for="correoVerificacion">Correo electrónico
                     <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoVerificacion" type="email" placeholder="usuario@empresa.com"></span>
@@ -39,7 +46,7 @@
                 </section>
                 <button class="auth-button" id="btnVerificarCodigo" type="button" disabled>Verificar y entrar</button>
             </div>
-            <p class="auth-api-note">POST /api/usuarios/codigo · POST /api/usuarios/codigo/validar</p>
+            <p class="auth-api-note">POST /api/auth/unlock/request · POST /api/auth/unlock/verify</p>
         </section>
     </main>
 </body>

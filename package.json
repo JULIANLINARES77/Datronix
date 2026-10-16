@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "seed:test-data": "node scripts/seed-test-data.mjs",
+    "check:seed-script": "node --check scripts/seed-test-data.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.16.3"
+  }
+}

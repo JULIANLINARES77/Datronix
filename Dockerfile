@@ -1,12 +1,25 @@
-# Etapa 1: Compilar el proyecto con Maven y JDK 21
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-WORKDIR /app
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+
+WORKDIR /workspace
+
 COPY pom.xml .
-RUN mvn dependency:go-offline
+RUN mvn -B -ntp dependency:go-offline
+
 COPY src ./src
-RUN mvn package -DskipTests
-# Etapa 2: Imagen final con JDK 21 (solo la aplicación)
-FROM eclipse-temurin:21-jdk
-COPY --from=build /app/target/*.jar app.jar
+RUN mvn -B -ntp package
+
+FROM eclipse-temurin:21-jre-alpine AS runtime
+
+WORKDIR /app
+
+RUN addgroup -S datronix && adduser -S datronix -G datronix
+
+COPY --from=build --chown=datronix:datronix /workspace/target/*.jar /app/app.jar
+
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -Dfile.encoding=UTF-8"
+ENV PORT=8080
+
+USER datronix
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar --server.port=${PORT:-8080}"]

@@ -2,7 +2,7 @@ function validarUsuario() {
     // Este es el recorrido completo del formulario: validar, consultar el servidor y entrar al panel.
     // Obtener valores del formulario
     const correoUsuario = document.getElementById('correoUsuario').value.trim();
-    const contrasenaUsuario = document.getElementById('contrasenaUsuario').value.trim();
+    const contrasenaUsuario = document.getElementById('contrasenaUsuario').value;
 
     // Validar que no estén vacíos
     if (!correoUsuario || !contrasenaUsuario) {
@@ -30,8 +30,11 @@ function validarUsuario() {
             return response.json(); // ✅ CORREGIDO: agregar paréntesis
         } else {
             // Si el login falla, leer el mensaje de error del backend
-            return response.text().then(text => {
-                throw new Error(text);
+            return response.json().then(error => {
+                const exception = new Error(error.mensaje || 'No fue posible iniciar sesión.');
+                exception.codigo = error.codigo;
+                exception.bloqueadaHasta = error.bloqueadaHasta;
+                throw exception;
             });
         }
     })
@@ -52,7 +55,12 @@ function validarUsuario() {
         window.location.href = '/html/inicio.html';
     })
     .catch(error => {
-        // Mostrar error al usuario
-        alert('Error: ' + error.message);
+        if (error.codigo === 'AUTH-423') {
+            const correo = encodeURIComponent(correoUsuario);
+            const bloqueadaHasta = encodeURIComponent(error.bloqueadaHasta);
+            window.location.href = `/html/verificar.html?correo=${correo}&bloqueadaHasta=${bloqueadaHasta}`;
+            return;
+        }
+        alert(error.message);
     });
 }

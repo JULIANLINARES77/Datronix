@@ -306,6 +306,36 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(CuentaBloqueadaException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCuentaBloqueada(CuentaBloqueadaException ex) {
+        return ResponseEntity.status(HttpStatus.LOCKED).body(
+                ErrorResponseDTO.builder()
+                        .codigo("AUTH-423")
+                        .mensaje(ex.getMessage())
+                        .bloqueadaHasta(ex.getBloqueadaHasta())
+                        .build());
+    }
+
+    @ExceptionHandler(CodigoVerificacionInvalidoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCodigoVerificacionInvalido(
+            CodigoVerificacionInvalidoException ex) {
+        return ResponseEntity.badRequest().body(
+                ErrorResponseDTO.builder()
+                        .codigo("AUTH-002")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(CorreoNoDisponibleException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCorreoNoDisponible(CorreoNoDisponibleException ex) {
+        LOGGER.error("Authentication email delivery failed.", ex);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
+                ErrorResponseDTO.builder()
+                        .codigo("AUTH-503")
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationErrors(MethodArgumentNotValidException ex) {
 

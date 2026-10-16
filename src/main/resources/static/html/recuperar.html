@@ -23,11 +23,13 @@
                 <label class="auth-label" for="correoRecuperacion">Correo electrónico
                     <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoRecuperacion" type="email" placeholder="usuario@empresa.com"></span>
                 </label>
-                <button class="auth-button" type="button">Enviar instrucciones</button>
-                <a class="auth-link-button" href="/html/restablecer.html">Ya verifiqué el código · Definir nueva contraseña</a>
+                <button class="auth-button" id="btnSolicitarRestablecimiento" type="button">Enviar código de recuperación</button>
+                <p class="auth-status-message" id="mensajeRecuperacion" role="status"></p>
+                <a class="auth-link-button" id="continuarRestablecimiento" href="/html/restablecer.html" hidden>Ya tengo el código · Definir nueva contraseña</a>
             </div>
-            <p class="auth-api-note">POST /api/usuarios/recuperar</p>
+            <p class="auth-api-note">POST /api/auth/password-reset/request</p>
         </section>
     </main>
+    <script src="/js/auth-pages.js" defer></script>
 </body>
 </html>

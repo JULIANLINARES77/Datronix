@@ -22,8 +22,10 @@ public class UsuarioCreateDTO {
     @Size(max = 255, message = "El correo no puede superar los 255 caracteres")
     private String correoUsuario;
 
-    @Size(min = 8, max = 100, message = "La contraseña debe tener almenos 8 caracteres")
+    @Size(min = 8, max = 72, message = "La contraseña debe tener entre 8 y 72 caracteres")
     @NotBlank(message = "La contraseña es obligatoria")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).+$",
+            message = "La contraseña debe incluir al menos una mayúscula y un número")
     private String contrasenaUsuario;
 
     @Pattern(regexp = "(?i)ADMINISTRADOR|OPERADOR|BODEGA", message = "El rol debe ser ADMINISTRADOR, OPERADOR o BODEGA")

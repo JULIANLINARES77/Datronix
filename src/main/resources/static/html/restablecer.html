@@ -19,13 +19,19 @@
         <section class="auth-card">
             <a class="auth-back-link" href="/html/Inicio_Sesion.html"><i class="fas fa-arrow-left"></i> Volver a iniciar sesión</a>
             <div class="auth-title-row"><span class="dashboard-card-icon"><i class="fas fa-key"></i></span><h1>Restablecer contraseña</h1></div>
-            <p class="auth-description">Correo verificado. Define tu nueva contraseña para restablecer el acceso.</p>
-            <div class="auth-form-stack">
+            <p class="auth-description">Ingresa el correo y el código de seis dígitos que recibiste; luego define una nueva contraseña.</p>
+            <form class="auth-form-stack" id="formRestablecerContrasena">
+                <label class="auth-label" for="correoRestablecimiento">Correo electrónico
+                    <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoRestablecimiento" type="email" required></span>
+                </label>
+                <label class="auth-label" for="codigoRestablecimiento">Código de recuperación
+                    <span class="auth-input-wrap"><i class="fas fa-shield-alt"></i><input id="codigoRestablecimiento" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></span>
+                </label>
                 <label class="auth-label" for="nuevaContrasena">Nueva contraseña
-                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="nuevaContrasena" type="password" placeholder="••••••••"><button class="auth-input-toggle" type="button" aria-label="Mostrar contraseña" data-toggle-password><i class="fas fa-eye"></i></button></span>
+                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="nuevaContrasena" type="password" placeholder="••••••••" required><button class="auth-input-toggle" type="button" aria-label="Mostrar contraseña" data-toggle-password><i class="fas fa-eye"></i></button></span>
                 </label>
                 <label class="auth-label" for="confirmarContrasena">Confirmar contraseña
-                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="confirmarContrasena" type="password" placeholder="••••••••"></span>
+                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="confirmarContrasena" type="password" placeholder="••••••••" required></span>
                     <span class="auth-inline-message is-error" id="mensajeNoCoincide" hidden>Las contraseñas no coinciden.</span>
                     <span class="auth-inline-message" id="mensajeCoincide" hidden>✓ Las contraseñas coinciden.</span>
                 </label>
@@ -34,9 +40,10 @@
                     <li data-requirement="uppercase" data-met="false">• Al menos una letra mayúscula</li>
                     <li data-requirement="number" data-met="false">• Al menos un número</li>
                 </ul>
-                <a class="auth-button" href="/html/Inicio_Sesion.html">Restablecer contraseña</a>
-            </div>
-            <p class="auth-api-note">POST /api/usuarios/restablecer</p>
+                <button class="auth-button" type="submit">Restablecer contraseña</button>
+                <p class="auth-status-message" id="mensajeRestablecimiento" role="status"></p>
+            </form>
+            <p class="auth-api-note">POST /api/auth/password-reset/confirm</p>
         </section>
     </main>
 </body>

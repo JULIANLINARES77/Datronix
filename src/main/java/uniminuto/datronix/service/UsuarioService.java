@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uniminuto.datronix.dto.UsuarioCreateDTO;
 import uniminuto.datronix.dto.UsuarioResponseDTO;
 import uniminuto.datronix.entity.Usuario;
-import uniminuto.datronix.exception.CredencialesInvalidasException;
 import uniminuto.datronix.exception.UsuarioCorreoDuplicadoException;
 import uniminuto.datronix.exception.UsuarioIdDuplicadoException;
 import uniminuto.datronix.exception.UsuarioNotFoundException;
@@ -21,6 +20,7 @@ import uniminuto.datronix.exception.UltimoAdministradorException;
 import uniminuto.datronix.exception.RolUsuarioInvalidoException;
 import uniminuto.datronix.mapper.UsuarioMapper;
 import uniminuto.datronix.repository.UsuarioRepository;
+import uniminuto.datronix.repository.EmailVerificationCodeRepository;
 
 @Service
 // Contiene las consultas de usuarios y la comprobación usada por el inicio de
@@ -30,14 +30,17 @@ public class UsuarioService {
     private static final long BLOQUEO_ADMINISTRADORES_ID = 78246109L;
 
     private final UsuarioRepository usuarioRepository;
+    private final EmailVerificationCodeRepository codeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
 
     public UsuarioService(
             UsuarioRepository usuarioRepository,
+            EmailVerificationCodeRepository codeRepository,
             PasswordEncoder passwordEncoder,
             JdbcTemplate jdbcTemplate) {
         this.usuarioRepository = usuarioRepository;
+        this.codeRepository = codeRepository;
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -107,29 +110,8 @@ public class UsuarioService {
                 && usuarioRepository.countByRolUsuarioIgnoreCase("ADMINISTRADOR") <= 1) {
             throw new UltimoAdministradorException();
         }
+        codeRepository.deleteAllByUsuario_IdUsuario(id);
         usuarioRepository.delete(usuario);
-    }
-
-    public Usuario autenticarUsuario(String correo, String contrasena) {
-        return usuarioRepository.findByCorreoUsuario(correo)
-            .filter(u -> {
-                String stored = u.getContrasenaUsuario();
-                if (stored == null) return false;
-
-                if (stored.startsWith("$2a$") || stored.startsWith("$2b$")) {
-                    // Ya es un hash BCrypt
-                    return passwordEncoder.matches(contrasena, stored);
-                } else {
-                    // Migra una contraseña heredada al primer inicio de sesión válido.
-                    boolean ok = stored.equals(contrasena);
-                    if (ok) {
-                        u.setContrasenaUsuario(passwordEncoder.encode(contrasena));
-                        usuarioRepository.save(u);
-                    }
-                    return ok;
-                }
-            })
-            .orElseThrow(CredencialesInvalidasException::new);
     }
 
     public UsuarioResponseDTO toResponseDTO(Usuario usuario) {

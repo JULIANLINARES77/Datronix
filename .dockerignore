@@ -1,0 +1,13 @@
+.git
+.github
+.vscode
+.mvn
+node_modules
+target
+prueba
+.env
+.env.*
+*.crt
+*.key
+application-local.properties
+runtime-validation-report.md

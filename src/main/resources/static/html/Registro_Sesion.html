@@ -32,7 +32,8 @@
                     <span class="auth-input-wrap"><i class="fas fa-envelope"></i><input id="correoUsuario" name="correoUsuario" type="email" maxlength="255" autocomplete="email" required></span>
                 </label>
                 <label class="auth-label" for="contrasenaUsuario">Contraseña
-                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="contrasenaUsuario" name="contrasenaUsuario" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></span>
+                    <span class="auth-input-wrap"><i class="fas fa-lock"></i><input id="contrasenaUsuario" name="contrasenaUsuario" type="password" minlength="8" maxlength="72" pattern="(?=.*[A-Z])(?=.*[0-9]).{8,72}" autocomplete="new-password" required></span>
+                    <span class="auth-description">Usa 8 a 72 caracteres, al menos una mayúscula y un número.</span>
                 </label>
                 <button class="auth-button" type="submit">Crear cuenta administradora</button>
                 <p id="estadoRegistro" class="auth-description" role="status"></p>
