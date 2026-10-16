@@ -7,11 +7,14 @@ privilegiado. Render proporciona `PORT`; la aplicación publica el health check 
 
 ## Variables de entorno
 
-Al crear el Blueprint desde `render.yaml`, completa sus variables `sync: false`
-desde el panel de Render:
+El Dockerfile descarga automáticamente el certificado raíz público del clúster
+CockroachDB durante la construcción de la imagen y lo deja en `/app/root.crt`.
+La URL JDBC del Blueprint ya referencia ese archivo, por lo que no necesitas
+cargar un Secret File de certificado ni configurar manualmente su ruta.
 
-- `SPRING_DATASOURCE_URL`: JDBC CockroachDB con TLS, por ejemplo
-  `jdbc:postgresql://<host>:26257/defaultdb?sslmode=verify-full&sslrootcert=/etc/secrets/root.crt`.
+Al crear el Blueprint desde `render.yaml`, completa las variables marcadas como
+`sync: false` desde el panel de Render:
+
 - `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`: usuario y contraseña
   de base de datos.
 - `SPRING_MAIL_USERNAME` y `SPRING_MAIL_PASSWORD`: cuenta SMTP y contraseña de
@@ -19,11 +22,9 @@ desde el panel de Render:
 - `DATRONIX_CORS_ALLOWED_ORIGINS`: origen o lista de orígenes del frontend,
   separados por comas.
 
-Sube el certificado raíz de CockroachDB como un **Secret File** de Render llamado
-`root.crt`; Render lo monta como `/etc/secrets/root.crt`. No agregues el certificado
-ni credenciales al repositorio o a la imagen Docker. La URL local que usa Windows
-no es válida dentro del contenedor, por eso Render debe recibir su propia
-`SPRING_DATASOURCE_URL`.
+El certificado se obtiene por HTTPS desde el endpoint público de CockroachDB y
+queda incluido en la imagen; no es una credencial. Las contraseñas de base de datos
+y correo permanecen como variables de entorno y no se copian a la imagen.
 
 La configuración prueba STARTTLS en el puerto 587 y establece tiempos máximos de
 conexión, lectura y escritura. La compilación no prueba la entrega SMTP: después
@@ -31,6 +32,8 @@ del despliegue, confirma que el plan y el proveedor permitan salida al puerto 58
 Si la conexión está bloqueada, se necesitará un proveedor de correo accesible por
 HTTPS/API.
 
-La aplicación conserva `spring.jpa.hibernate.ddl-auto=update`; el usuario de base
+La descarga del certificado ocurre al construir la imagen, así que la construcción
+requiere acceso HTTPS al endpoint de CockroachDB. La aplicación conserva
+`spring.jpa.hibernate.ddl-auto=update`; el usuario de base
 de datos debe tener permisos para consultar y actualizar el esquema. Revisa el
 health check y los logs del servicio tras el primer despliegue.

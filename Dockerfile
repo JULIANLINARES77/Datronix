@@ -1,25 +1,30 @@
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
-WORKDIR /workspace
+WORKDIR /app
 
 COPY pom.xml .
 RUN mvn -B -ntp dependency:go-offline
 
 COPY src ./src
-RUN mvn -B -ntp package
+RUN mvn -B -ntp clean package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine AS runtime
 
 WORKDIR /app
 
-RUN addgroup -S datronix && adduser -S datronix -G datronix
+RUN apk add --no-cache ca-certificates wget \
+    && update-ca-certificates \
+    && wget -q https://cockroachlabs.cloud/clusters/1db28f92-372b-4b79-be59-7ff031d19765/cert -O /app/root.crt \
+    && chmod 0444 /app/root.crt \
+    && apk del wget
 
-COPY --from=build --chown=datronix:datronix /workspace/target/*.jar /app/app.jar
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
 
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -Dfile.encoding=UTF-8"
-ENV PORT=8080
+COPY --from=build /app/target/*.jar /app.jar
 
-USER datronix
+ENV SPRING_DATASOURCE_URL="jdbc:postgresql://datronix-35292.j77.aws-us-east-1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full&sslrootcert=/app/root.crt"
+
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar --server.port=${PORT:-8080}"]
+ENTRYPOINT ["java", "-jar", "/app.jar"]
