@@ -148,7 +148,7 @@ function agregarProductoVenta() {
         return;
     }
     const enCarrito = carritoVentaActual
-        .filter(linea => linea.producto.idProducto === productoVentaSeleccionado.idProducto)
+        .filter(linea => String(linea.producto.idProducto) === String(productoVentaSeleccionado.idProducto))
         .reduce((sum, linea) => sum + linea.cantidad, 0);
     if (cantidad + enCarrito > productoVentaSeleccionado.stockProducto) {
         mostrarEstadoVenta(`Stock insuficiente. Disponible: ${productoVentaSeleccionado.stockProducto - enCarrito}.`);
@@ -245,7 +245,7 @@ async function inicializarVentas() {
     document.getElementById('productoVentaSugerencias').addEventListener('click', event => {
         const button = event.target.closest('[data-producto-id]');
         productoVentaSeleccionado = productosVenta.find(item =>
-            item.idProducto === Number(button?.dataset.productoId)) || null;
+            String(item.idProducto) === button?.dataset.productoId) || null;
         if (productoVentaSeleccionado) {
             document.getElementById('productoVentaBusqueda').value = productoVentaSeleccionado.nombreProducto;
             document.getElementById('productoVentaSugerencias').hidden = true;

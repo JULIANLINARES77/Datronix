@@ -28,6 +28,11 @@ function mensajeErrorHistorial(error) {
     }
 }
 
+function actualizarEstadoHistorial(mensaje) {
+    const estado = document.getElementById('historialVentasEstado');
+    if (estado) estado.textContent = mensaje;
+}
+
 function actualizarKpisHistorial() {
     const ahora = new Date();
     const mes = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}`;
@@ -134,8 +139,7 @@ async function mostrarDetalleVenta(idVenta) {
         document.getElementById('imprimirRemisionVenta').disabled = !remision;
         dialog.showModal();
     } catch (error) {
-        document.getElementById('historialVentasEstado').textContent =
-            `No se pudo cargar el detalle: ${mensajeErrorHistorial(error)}`;
+        actualizarEstadoHistorial(`No se pudo cargar el detalle: ${mensajeErrorHistorial(error)}`);
     }
 }
 
@@ -148,7 +152,7 @@ async function inicializarHistorial() {
     document.getElementById('buscarHistorialVentas').addEventListener('input', renderizarHistorial);
     document.getElementById('historialVentasTbody').addEventListener('click', event => {
         const button = event.target.closest('[data-venta-id]');
-        if (button) mostrarDetalleVenta(Number(button.dataset.ventaId));
+        if (button) mostrarDetalleVenta(button.dataset.ventaId);
     });
     document.getElementById('imprimirRemisionVenta').addEventListener('click', () => window.print());
     try {
@@ -156,8 +160,7 @@ async function inicializarHistorial() {
         actualizarKpisHistorial();
         renderizarHistorial();
     } catch (error) {
-        document.getElementById('historialVentasEstado').textContent =
-            `No se pudo cargar el historial: ${mensajeErrorHistorial(error)}`;
+        actualizarEstadoHistorial(`No se pudo cargar el historial: ${mensajeErrorHistorial(error)}`);
     }
 }
 

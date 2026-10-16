@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 // Define los datos de producto que viajan entre la pantalla y el backend.
 public class ProductoDTO {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long idProducto;
 
     @NotBlank(message = "El nombre del producto es obligatorio")

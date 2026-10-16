@@ -5,6 +5,14 @@ import { getData, postData, putData, deleteData } from './api.js';
 let proveedoresData = [];
 let proveedorEditando = null;
 
+function mensajeErrorProveedor(error) {
+    try {
+        return JSON.parse(error.message).mensaje || error.message;
+    } catch {
+        return error.message;
+    }
+}
+
 console.log('✅ proveedores.js cargado');
 
 // ============ INICIALIZACIÓN ============
@@ -209,7 +217,7 @@ async function eliminarProveedor() {
         renderizarTabla(proveedoresData);
         alert('🗑 Proveedor eliminado');
     } catch (error) {
-        alert('❌ Error al eliminar: ' + error.message);
+        alert('❌ ' + mensajeErrorProveedor(error));
     }
 }
 

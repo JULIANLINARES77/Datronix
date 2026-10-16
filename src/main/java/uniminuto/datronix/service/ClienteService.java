@@ -4,8 +4,10 @@ import uniminuto.datronix.dto.ClienteDTO;
 import uniminuto.datronix.entity.Cliente;
 import uniminuto.datronix.exception.ClienteDuplicadoException;
 import uniminuto.datronix.exception.ClienteNotFoundException;
+import uniminuto.datronix.exception.RegistroEnUsoException;
 import uniminuto.datronix.mapper.ClienteMapper;
 import uniminuto.datronix.repository.ClienteRepository;
+import uniminuto.datronix.repository.VentaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +19,11 @@ import java.util.stream.Collectors;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final VentaRepository ventaRepository;
 
-    public ClienteService(ClienteRepository clienteRepository) {
+    public ClienteService(ClienteRepository clienteRepository, VentaRepository ventaRepository) {
         this.clienteRepository = clienteRepository;
+        this.ventaRepository = ventaRepository;
     }
 
     // LISTAR → devuelve List<ClienteDTO>
@@ -92,6 +96,10 @@ public class ClienteService {
         // registrado.
         if (!clienteRepository.existsById(id)) {
             throw new ClienteNotFoundException(id);
+        }
+        if (ventaRepository.existsByCliente_IdCliente(id)) {
+            throw new RegistroEnUsoException(
+                    "No se puede eliminar el cliente porque tiene ventas registradas.");
         }
         clienteRepository.deleteById(id);
     }

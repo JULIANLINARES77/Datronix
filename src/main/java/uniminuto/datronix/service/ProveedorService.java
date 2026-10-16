@@ -7,7 +7,10 @@ import uniminuto.datronix.exception.ProveedorEmailDuplicadoException;
 import uniminuto.datronix.exception.ProveedorIdDuplicadoException;
 import uniminuto.datronix.exception.ProveedorNotFoundException;
 import uniminuto.datronix.exception.ProveedorTelefonoDuplicadoException;
+import uniminuto.datronix.exception.RegistroEnUsoException;
 import uniminuto.datronix.mapper.ProveedorMapper;
+import uniminuto.datronix.repository.CompraRepository;
+import uniminuto.datronix.repository.ProductoRepository;
 import uniminuto.datronix.repository.ProveedorRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +24,16 @@ import java.util.stream.Collectors;
 public class ProveedorService {
 
     private final ProveedorRepository proveedorRepository;
+    private final ProductoRepository productoRepository;
+    private final CompraRepository compraRepository;
 
-    public ProveedorService(ProveedorRepository proveedorRepository) {
+    public ProveedorService(
+            ProveedorRepository proveedorRepository,
+            ProductoRepository productoRepository,
+            CompraRepository compraRepository) {
         this.proveedorRepository = proveedorRepository;
+        this.productoRepository = productoRepository;
+        this.compraRepository = compraRepository;
     }
 
     public List<ProveedorDTO> listarProveedores() {
@@ -120,6 +130,14 @@ public class ProveedorService {
         // Evita confirmar un borrado cuando el proveedor nunca estuvo registrado.
         if (!proveedorRepository.existsById(id)) {
             throw new ProveedorNotFoundException(id);
+        }
+        if (productoRepository.existsByProveedor_IdProveedor(id)) {
+            throw new RegistroEnUsoException(
+                    "No se puede eliminar el proveedor porque tiene productos asociados.");
+        }
+        if (compraRepository.existsByProveedor_IdProveedor(id)) {
+            throw new RegistroEnUsoException(
+                    "No se puede eliminar el proveedor porque tiene compras registradas.");
         }
         proveedorRepository.deleteById(id);
     }

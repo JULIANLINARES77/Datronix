@@ -6,6 +6,14 @@ let productosData = [];
 let proveedoresData = [];
 let productoEditando = null;
 
+function mensajeErrorProducto(error) {
+    try {
+        return JSON.parse(error.message).mensaje || error.message;
+    } catch {
+        return error.message;
+    }
+}
+
 console.log('✅ productos.js cargado');
 
 // ============ INICIALIZACIÓN ============
@@ -136,8 +144,8 @@ function abrirModalEditar() {
         alert('Selecciona un producto de la tabla');
         return;
     }
-    const id = parseInt(selectedRow.dataset.id);
-    const producto = productosData.find(p => p.idProducto === id);
+    const id = selectedRow.dataset.id;
+    const producto = productosData.find(p => String(p.idProducto) === id);
     if (!producto) {
         alert('Producto no encontrado');
         return;
@@ -215,7 +223,7 @@ async function guardarProducto() {
 
 async function guardarProductoEdit() {
     // Envía los cambios del producto seleccionado y refresca la tabla local.
-    const id = parseInt(document.getElementById('txtIdProductoEdit').value);
+    const id = document.getElementById('txtIdProductoEdit').value;
     const nombre = document.getElementById('txtNombreProductoEdit').value.trim();
     const sku = document.getElementById('txtSkuProductoEdit').value.trim();
     const categoria = document.getElementById('txtCategoriaProductoEdit').value.trim();
@@ -249,7 +257,7 @@ async function guardarProductoEdit() {
 
     try {
         const actualizado = await putData(`/productos/${id}`, productoActualizado);
-        const index = productosData.findIndex(p => p.idProducto === id);
+        const index = productosData.findIndex(p => String(p.idProducto) === id);
         if (index !== -1) {
             productosData[index] = actualizado;
         }
@@ -268,16 +276,16 @@ async function eliminarProducto() {
         alert('Selecciona un producto para eliminar');
         return;
     }
-    const id = parseInt(selectedRow.dataset.id);
+    const id = selectedRow.dataset.id;
     if (!confirm(`¿Eliminar el producto con ID ${id}?`)) return;
 
     try {
         await deleteData(`/productos/${id}`);
-        productosData = productosData.filter(p => p.idProducto !== id);
+        productosData = productosData.filter(p => String(p.idProducto) !== id);
         renderizarTabla(productosData);
         alert('🗑 Producto eliminado');
     } catch (error) {
-        alert('❌ Error al eliminar: ' + error.message);
+        alert('❌ ' + mensajeErrorProducto(error));
     }
 }
 

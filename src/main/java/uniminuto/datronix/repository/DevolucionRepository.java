@@ -8,5 +8,7 @@ import uniminuto.datronix.entity.Devolucion;
 
 // Spring Data ofrece aquí el CRUD de devoluciones.
 public interface DevolucionRepository extends JpaRepository<Devolucion,Long>{
+    boolean existsByProducto_IdProducto(Long idProducto);
+
     List<Devolucion> findAllByOrderByFechaDevolucionDescIdDevolucionDesc();
 }

@@ -6,7 +6,11 @@ import uniminuto.datronix.entity.Proveedor;
 import uniminuto.datronix.exception.ProductoNotFoundException;
 import uniminuto.datronix.exception.ProductoSkuDuplicadoException;
 import uniminuto.datronix.exception.ProveedorNotFoundException;
+import uniminuto.datronix.exception.RegistroEnUsoException;
 import uniminuto.datronix.mapper.ProductoMapper;
+import uniminuto.datronix.repository.DevolucionRepository;
+import uniminuto.datronix.repository.DetalleCompraRepository;
+import uniminuto.datronix.repository.DetalleVentaRepository;
 import uniminuto.datronix.repository.ProductoRepository;
 import uniminuto.datronix.repository.ProveedorRepository;
 import org.springframework.stereotype.Service;
@@ -23,10 +27,21 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final ProveedorRepository proveedorRepository;
+    private final DetalleVentaRepository detalleVentaRepository;
+    private final DetalleCompraRepository detalleCompraRepository;
+    private final DevolucionRepository devolucionRepository;
 
-    public ProductoService(ProductoRepository productoRepository, ProveedorRepository proveedorRepository) {
+    public ProductoService(
+            ProductoRepository productoRepository,
+            ProveedorRepository proveedorRepository,
+            DetalleVentaRepository detalleVentaRepository,
+            DetalleCompraRepository detalleCompraRepository,
+            DevolucionRepository devolucionRepository) {
         this.productoRepository = productoRepository;
         this.proveedorRepository = proveedorRepository;
+        this.detalleVentaRepository = detalleVentaRepository;
+        this.detalleCompraRepository = detalleCompraRepository;
+        this.devolucionRepository = devolucionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -125,6 +140,18 @@ public class ProductoService {
         // Primero se confirma la existencia para que un ID inválido produzca un mensaje útil.
         if (!productoRepository.existsById(id)) {
             throw new ProductoNotFoundException(id);
+        }
+        if (detalleVentaRepository.existsByProducto_IdProducto(id)) {
+            throw new RegistroEnUsoException(
+                    "No se puede eliminar el producto porque está asociado a una o más ventas.");
+        }
+        if (detalleCompraRepository.existsByProducto_IdProducto(id)) {
+            throw new RegistroEnUsoException(
+                    "No se puede eliminar el producto porque está asociado a una o más compras.");
+        }
+        if (devolucionRepository.existsByProducto_IdProducto(id)) {
+            throw new RegistroEnUsoException(
+                    "No se puede eliminar el producto porque tiene devoluciones registradas.");
         }
         productoRepository.deleteById(id);
     }

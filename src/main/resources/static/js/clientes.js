@@ -5,6 +5,14 @@ import { getData, postData, putData, deleteData } from './api.js';
 let clientesData = [];
 let clienteEditando = null;
 
+function mensajeErrorCliente(error) {
+    try {
+        return JSON.parse(error.message).mensaje || error.message;
+    } catch {
+        return error.message;
+    }
+}
+
 console.log('✅ clientes.js cargado');
 
 // ============ INICIALIZACIÓN ============
@@ -202,7 +210,7 @@ async function eliminarCliente() {
         renderizarTabla(clientesData);
         alert('🗑 Cliente eliminado');
     } catch (error) {
-        alert('❌ Error al eliminar: ' + error.message);
+        alert('❌ ' + mensajeErrorCliente(error));
     }
 }
 

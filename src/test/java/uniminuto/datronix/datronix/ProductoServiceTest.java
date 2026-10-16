@@ -19,12 +19,23 @@ import uniminuto.datronix.entity.Proveedor;
 import uniminuto.datronix.exception.ProductoSkuDuplicadoException;
 import uniminuto.datronix.repository.ProductoRepository;
 import uniminuto.datronix.repository.ProveedorRepository;
+import uniminuto.datronix.repository.DetalleVentaRepository;
+import uniminuto.datronix.repository.DetalleCompraRepository;
+import uniminuto.datronix.repository.DevolucionRepository;
 import uniminuto.datronix.service.ProductoService;
 
 class ProductoServiceTest {
     private final ProductoRepository productoRepository = Mockito.mock(ProductoRepository.class);
     private final ProveedorRepository proveedorRepository = Mockito.mock(ProveedorRepository.class);
-    private final ProductoService service = new ProductoService(productoRepository, proveedorRepository);
+    private final DetalleVentaRepository detalleVentaRepository = Mockito.mock(DetalleVentaRepository.class);
+    private final DetalleCompraRepository detalleCompraRepository = Mockito.mock(DetalleCompraRepository.class);
+    private final DevolucionRepository devolucionRepository = Mockito.mock(DevolucionRepository.class);
+    private final ProductoService service = new ProductoService(
+            productoRepository,
+            proveedorRepository,
+            detalleVentaRepository,
+            detalleCompraRepository,
+            devolucionRepository);
 
     @Test
     void updateRejectsSkuOwnedByAnotherProduct() {
@@ -87,5 +98,16 @@ class ProductoServiceTest {
 
         assertTrue(entityReadyToInsert.get());
         verify(productoRepository).save(any(Producto.class));
+    }
+
+    @Test
+    void deleteExplainsWhenProductHasSales() {
+        when(productoRepository.existsById(12L)).thenReturn(true);
+        when(detalleVentaRepository.existsByProducto_IdProducto(12L)).thenReturn(true);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.eliminarProducto(12L));
+
+        assertTrue(exception.getMessage().contains("asociado a una o más ventas"));
+        verify(productoRepository, never()).deleteById(12L);
     }
 }

@@ -14,6 +14,8 @@ import uniminuto.datronix.dto.StockBajoReporteDTO;
 
 // Spring Data crea las operaciones básicas para consultar y guardar productos.
 public interface ProductoRepository extends JpaRepository<Producto,Long>{
+    boolean existsByProveedor_IdProveedor(String idProveedor);
+
     
     @Query("SELECT p FROM Producto p JOIN FETCH p.proveedor")
     List<Producto> findAllWithProveedor();

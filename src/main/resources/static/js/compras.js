@@ -38,18 +38,46 @@ function buscarProveedorCompra() {
     const termino = document.getElementById('proveedorBusqueda').value.trim().toLowerCase();
     if (!termino) {
         proveedorCompraSeleccionado = null;
+        renderizarSugerenciasProveedores([]);
         mostrarProveedorCompra();
         mostrarEstadoCompra('Escribe el ID o el nombre de un proveedor.');
         return;
     }
-    proveedorCompraSeleccionado = proveedoresCompra.find(proveedor =>
+    const coincidencias = proveedoresCompra.filter(proveedor =>
         proveedor.idProveedor.toLowerCase() === termino ||
         proveedor.nombreEmpresa.toLowerCase().includes(termino)
-    ) || null;
-    mostrarProveedorCompra();
-    mostrarEstadoCompra(proveedorCompraSeleccionado
-        ? 'Proveedor seleccionado.'
+    );
+    renderizarSugerenciasProveedores(coincidencias);
+    mostrarEstadoCompra(coincidencias.length
+        ? 'Selecciona el proveedor de la lista para agregarlo a la compra.'
         : 'No se encontró un proveedor con ese ID o nombre.');
+}
+
+function renderizarSugerenciasProveedores(proveedores) {
+    const suggestions = document.getElementById('proveedorSugerencias');
+    suggestions.replaceChildren();
+    proveedores.forEach(proveedor => {
+        const button = document.createElement('button');
+        button.className = 'purchase-suggestion';
+        button.type = 'button';
+        button.dataset.proveedorId = proveedor.idProveedor;
+        button.textContent = `${proveedor.nombreEmpresa} · ${proveedor.idProveedor}`;
+        suggestions.appendChild(button);
+    });
+    suggestions.hidden = suggestions.childElementCount === 0;
+}
+
+function seleccionarProveedorCompra(proveedor) {
+    if (filasCompraActuales.length > 0 &&
+        proveedorCompraSeleccionado?.idProveedor !== proveedor.idProveedor) {
+        mostrarEstadoCompra('Vacía los productos agregados antes de cambiar el proveedor.');
+        return;
+    }
+    proveedorCompraSeleccionado = proveedor;
+    document.getElementById('proveedorBusqueda').value = proveedor.nombreEmpresa;
+    renderizarSugerenciasProveedores([]);
+    mostrarProveedorCompra();
+    mostrarEstadoCompra(`Proveedor ${proveedor.nombreEmpresa} agregado a la compra.`);
 }
 
 function mensajeErrorCompra(error) {
@@ -71,7 +99,8 @@ function mostrarSugerenciasProducto() {
     }
 
     productosCompra
-        .filter(producto => producto.nombreProducto.toLowerCase().includes(termino))
+        .filter(producto => String(producto.idProducto).includes(termino) ||
+            producto.nombreProducto.toLowerCase().includes(termino))
         .forEach(producto => {
             const button = document.createElement('button');
             button.className = 'purchase-suggestion';
@@ -126,9 +155,13 @@ function renderizarFilasCompra() {
 function agregarFilaCompra() {
     const cantidad = Number(document.getElementById('cantidadProducto').value);
     const precio = Number(document.getElementById('precioProducto').value);
+    if (!proveedorCompraSeleccionado) {
+        mostrarEstadoCompra('Selecciona y agrega un proveedor antes de agregar productos.');
+        return;
+    }
     if (!productoCompraSeleccionado || !Number.isSafeInteger(cantidad) || cantidad <= 0 ||
         !Number.isFinite(precio) || precio < 0) {
-        mostrarEstadoCompra('Selecciona un producto e ingresa una cantidad y un precio válidos.');
+        mostrarEstadoCompra('Selecciona un producto de la lista e ingresa una cantidad y un precio válidos.');
         return;
     }
 
@@ -277,6 +310,11 @@ async function inicializarCompras() {
     document.getElementById('fechaCompra').value = fechaLocal;
     document.getElementById('filtroFechaCompra').value = '';
     document.getElementById('buscarProveedor').addEventListener('click', buscarProveedorCompra);
+    document.getElementById('proveedorBusqueda').addEventListener('input', () => {
+        proveedorCompraSeleccionado = null;
+        mostrarProveedorCompra();
+        renderizarSugerenciasProveedores([]);
+    });
     document.getElementById('proveedorBusqueda').addEventListener('keydown', event => {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -286,8 +324,15 @@ async function inicializarCompras() {
     document.getElementById('productoBusqueda').addEventListener('input', mostrarSugerenciasProducto);
     document.getElementById('productoSugerencias').addEventListener('click', event => {
         const button = event.target.closest('[data-producto-id]');
-        const producto = productosCompra.find(item => item.idProducto === Number(button?.dataset.productoId));
+        const producto = productosCompra.find(item =>
+            String(item.idProducto) === button?.dataset.productoId);
         if (producto) seleccionarProductoCompra(producto);
+    });
+    document.getElementById('proveedorSugerencias').addEventListener('click', event => {
+        const button = event.target.closest('[data-proveedor-id]');
+        const proveedor = proveedoresCompra.find(item =>
+            item.idProveedor === button?.dataset.proveedorId);
+        if (proveedor) seleccionarProveedorCompra(proveedor);
     });
     document.getElementById('agregarProductoCompra').addEventListener('click', agregarFilaCompra);
     document.getElementById('registrarCompra').addEventListener('click', registrarCompra);
@@ -299,7 +344,7 @@ async function inicializarCompras() {
     });
     document.getElementById('comprasTbody').addEventListener('click', event => {
         const button = event.target.closest('[data-purchase-detail]');
-        if (button) mostrarDetalleCompra(Number(button.dataset.purchaseDetail));
+        if (button) mostrarDetalleCompra(button.dataset.purchaseDetail);
     });
     document.getElementById('filtroFechaCompra').addEventListener('change', renderizarCompras);
     document.getElementById('filtroProveedorCompra').addEventListener('input', renderizarCompras);

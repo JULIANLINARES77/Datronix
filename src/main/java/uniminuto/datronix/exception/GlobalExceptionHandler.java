@@ -249,6 +249,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(RegistroEnUsoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRegistroEnUso(RegistroEnUsoException ex) {
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .codigo("REL-001")
+                .mensaje(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     // 5. Cualquier otro error no controlado → 500
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(NoResourceFoundException ex) {

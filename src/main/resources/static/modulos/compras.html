@@ -19,6 +19,7 @@
                             <div class="workflow-search-box"><i class="fas fa-search"></i><input id="proveedorBusqueda" placeholder="Buscar por ID o empresa..."></div>
                             <button class="workflow-action" id="buscarProveedor" type="button">Buscar</button>
                         </div>
+                        <div class="purchase-suggestions" id="proveedorSugerencias" role="listbox" hidden></div>
                         <div class="purchase-provider-message workflow-helper" id="proveedorMessage">Seleccione un proveedor registrado.</div>
                         <div class="purchase-provider-card" id="proveedorSeleccionado" hidden></div>
                     </div>
@@ -36,7 +37,7 @@
                         </div>
                         <input class="workflow-input" id="cantidadProducto" type="number" min="1" value="1" aria-label="Cantidad">
                         <input class="workflow-input" id="precioProducto" type="number" min="0" value="" aria-label="Precio unitario">
-                        <button class="workflow-action" id="agregarProductoCompra" type="button" aria-label="Agregar producto"><i class="fas fa-plus"></i></button>
+                        <button class="workflow-action" id="agregarProductoCompra" type="button"><i class="fas fa-plus"></i> Agregar producto</button>
                     </div>
                     <div class="workflow-table-wrap" style="margin-top:12px">
                         <table class="workflow-table" style="min-width:480px">

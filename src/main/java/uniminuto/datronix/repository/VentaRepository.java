@@ -15,6 +15,8 @@ import uniminuto.datronix.entity.Venta;
 
 // Spring Data crea las operaciones básicas para las ventas.
 public interface VentaRepository extends JpaRepository<Venta,Long> {
+    boolean existsByCliente_IdCliente(String idCliente);
+
     @Query("""
             SELECT DISTINCT v FROM Venta v
             LEFT JOIN FETCH v.cliente

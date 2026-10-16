@@ -13,10 +13,14 @@ import uniminuto.datronix.repository.SoporteRepository;
 
 @Service
 public class SoporteService {
-    private final SoporteRepository soporteRepository;
+    private static final String CORREO_DESTINO_SOPORTE = "linaresjulian77@gmail.com";
 
-    public SoporteService(SoporteRepository soporteRepository) {
+    private final SoporteRepository soporteRepository;
+    private final EmailService emailService;
+
+    public SoporteService(SoporteRepository soporteRepository, EmailService emailService) {
         this.soporteRepository = soporteRepository;
+        this.emailService = emailService;
     }
 
     @Transactional(readOnly = true)
@@ -39,6 +43,34 @@ public class SoporteService {
                 .descripcion(request.getDescripcion().trim())
                 .fechaCreacion(request.getFechaCreacion())
                 .build();
-        return SoporteMapper.toDto(soporteRepository.save(soporte));
+        Soporte guardado = soporteRepository.save(soporte);
+        emailService.enviarCorreo(
+                CORREO_DESTINO_SOPORTE,
+                "Nuevo reporte de soporte: " + guardado.getAsunto(),
+                construirCorreoHtml(guardado));
+        return SoporteMapper.toDto(guardado);
+    }
+
+    private String construirCorreoHtml(Soporte soporte) {
+        return "<h2>Nuevo reporte de soporte de Datronix</h2>"
+                + "<p><strong>Empresa:</strong> " + escaparHtml(soporte.getEmpresa()) + "</p>"
+                + "<p><strong>Remitente:</strong> " + escaparHtml(soporte.getNombreRemitente()) + "</p>"
+                + "<p><strong>Documento:</strong> " + escaparHtml(soporte.getIdRemitente()) + "</p>"
+                + "<p><strong>Teléfono:</strong> " + escaparHtml(soporte.getTelefonoRemitente()) + "</p>"
+                + "<p><strong>Asunto:</strong> " + escaparHtml(soporte.getAsunto()) + "</p>"
+                + "<p><strong>Descripción:</strong></p><p>"
+                + escaparHtml(soporte.getDescripcion()).replace("\n", "<br>")
+                + "</p>";
+    }
+
+    private String escaparHtml(String valor) {
+        if (valor == null) {
+            return "";
+        }
+        return valor.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }

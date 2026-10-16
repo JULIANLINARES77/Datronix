@@ -10,6 +10,8 @@ import uniminuto.datronix.dto.ProductoVendidoReporteDTO;
 
 // Spring Data ofrece aquí el CRUD de detalles de venta.
 public interface DetalleVentaRepository extends JpaRepository<DetalleVenta,Long>{
+    boolean existsByProducto_IdProducto(Long idProducto);
+
     @Query("""
             SELECT new uniminuto.datronix.dto.ProductoVendidoReporteDTO(
                 p.idProducto, p.nombreProducto, SUM(d.cantidad),

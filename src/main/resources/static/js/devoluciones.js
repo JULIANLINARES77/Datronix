@@ -145,7 +145,7 @@ async function inicializarDevoluciones() {
     document.getElementById('productoDevolucionSugerencias').addEventListener('click', event => {
         const button = event.target.closest('[data-producto-id]');
         productoDevolucionSeleccionado = productosDevolucion.find(producto =>
-            producto.idProducto === Number(button?.dataset.productoId)) || null;
+            String(producto.idProducto) === button?.dataset.productoId) || null;
         if (productoDevolucionSeleccionado) {
             document.getElementById('productoDevolucionBusqueda').value =
                 productoDevolucionSeleccionado.nombreProducto;

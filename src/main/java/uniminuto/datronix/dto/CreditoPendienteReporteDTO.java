@@ -4,7 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.ser.std.ToStringSerializer;
+
 public final class CreditoPendienteReporteDTO {
+    @JsonSerialize(using = ToStringSerializer.class)
     private final Long idVenta;
     private final String nombreCliente;
     private final LocalDate fechaVenta;
