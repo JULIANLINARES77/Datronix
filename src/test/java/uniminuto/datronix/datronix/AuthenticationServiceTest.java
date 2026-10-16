@@ -150,6 +150,42 @@ class AuthenticationServiceTest {
     }
 
     @Test
+    void accessCodeCanBeRequestedAndUsedForAnUnlockedAccount() {
+        Usuario usuario = usuario("user@example.test", "bcrypt-hash");
+        EmailVerificationCode code = verificationCode(
+                "USER-1", EmailVerificationCode.ACCOUNT_UNLOCK, "code-hash");
+        when(usuarioRepository.findByCorreoUsuarioForUpdate("user@example.test"))
+                .thenReturn(Optional.of(usuario));
+        when(passwordEncoder.encode(any())).thenReturn("code-hash");
+        when(codeRepository.findFirstByUsuario_IdUsuarioAndPurposeOrderByCreatedAtDesc(
+                "USER-1", EmailVerificationCode.ACCOUNT_UNLOCK)).thenReturn(Optional.empty());
+        when(codeRepository.save(any(EmailVerificationCode.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(codeRepository.findLatestForUpdate("USER-1", EmailVerificationCode.ACCOUNT_UNLOCK))
+                .thenReturn(Optional.of(code));
+        when(passwordEncoder.matches("123456", "code-hash")).thenReturn(true);
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EmailAddressRequestDTO request = new EmailAddressRequestDTO();
+        request.setCorreoUsuario("user@example.test");
+        service.solicitarDesbloqueo(request);
+
+        verify(emailService).enviarCorreo(
+                Mockito.eq("user@example.test"),
+                Mockito.eq("Código de seguridad de Datronix"),
+                any(String.class));
+
+        EmailCodeVerificationDTO verification = new EmailCodeVerificationDTO();
+        verification.setCorreoUsuario("user@example.test");
+        verification.setCodigo("123456");
+        var response = service.verificarDesbloqueo(verification);
+
+        assertEquals("USER-1", response.getIdUsuario());
+        assertEquals("OPERADOR", response.getRolUsuario());
+        assertEquals(0, usuario.getLoginLockLevel());
+    }
+
+    @Test
     void passwordResetConsumesCodeAndReplacesThePasswordHash() {
         Usuario usuario = usuario("user@example.test", "old-hash");
         EmailVerificationCode code = verificationCode(

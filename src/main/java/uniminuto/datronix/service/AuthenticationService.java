@@ -83,9 +83,8 @@ public class AuthenticationService {
     @Transactional
     public String solicitarDesbloqueo(EmailAddressRequestDTO request) {
         usuarioRepository.findByCorreoUsuarioForUpdate(normalizarCorreo(request.getCorreoUsuario()))
-                .filter(usuario -> usuario.getLoginLockLevel() > 0)
                 .ifPresent(usuario -> emitirCodigo(
-                        usuario, EmailVerificationCode.ACCOUNT_UNLOCK, "verificar el acceso a tu cuenta"));
+                        usuario, EmailVerificationCode.ACCOUNT_UNLOCK, "iniciar sesión y verificar el acceso a tu cuenta"));
         return MENSAJE_SOLICITUD;
     }
 

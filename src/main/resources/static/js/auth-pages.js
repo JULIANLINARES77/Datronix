@@ -22,7 +22,7 @@ async function enviarCodigoDesbloqueo() {
         inputs.forEach(input => { input.value = ''; });
         iniciarTemporizadorCodigo();
         sent = true;
-        message.textContent = 'Si la cuenta está registrada y bloqueada, recibirás un código válido por 2 minutos.';
+        message.textContent = 'Si el correo corresponde a una cuenta, recibirás un código válido por 2 minutos.';
         inputs[0].focus();
     } catch (error) {
         message.textContent = error.message;
